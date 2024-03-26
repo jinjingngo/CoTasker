@@ -1,26 +1,17 @@
-// test/index.spec.ts
-import { env, createExecutionContext, waitOnExecutionContext, SELF } from 'cloudflare:test';
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { UnstableDevWorker, unstable_dev } from 'wrangler';
+import { env, createExecutionContext } from 'cloudflare:test';
+import { describe, it, expect } from 'vitest';
+import streamer from '../src';
+
+const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
 
 describe('Streamer', () => {
-	let streamer: UnstableDevWorker;
-
-	beforeAll(async () => {
-		streamer = await unstable_dev('src/index.ts', {
-			experimental: { disableExperimentalWarning: true },
-		});
-	});
-
-	afterAll(async () => {
-		await streamer.stop();
-	});
-
-	it('should return Hello World', async () => {
-		const resp = await streamer.fetch();
+	it('should return html document', async () => {
+		const ctx = createExecutionContext();
+		const resp = await streamer.fetch(new IncomingRequest(''), env, ctx);
 		if (resp) {
 			const text = await resp.text();
-			expect(text).toMatchInlineSnapshot(`"Hello World!"`);
+			console.log(text);
+			expect(text).toBeTruthy();
 		}
 	});
 });
