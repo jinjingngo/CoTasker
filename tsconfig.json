@@ -22,5 +22,6 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  // exclude `co-tasker-stream` from the FE project
+  "exclude": ["node_modules", "co-tasker-stream"]
 }
