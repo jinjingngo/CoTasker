@@ -163,20 +163,16 @@ describe("DB Todo", () => {
       expect(todo).toBeUndefined();
     });
 
-    // it("should return expected object", async () => {
-    //   const expected = { uuid, title };
-    //   spy!.mockImplementation(() => {
-    //     return {
-    //       query: () => {
-    //         return {
-    //           rows: [expected],
-    //         };
-    //       },
-    //     } as unknown as Pool;
-    //   });
+    it("should return expected object", async () => {
+      const expected = { rowCount: 1 };
+      spy!.mockImplementation(() => {
+        return {
+          query: () => expected,
+        } as unknown as Pool;
+      });
 
-    //   const tasks = await updateTodo(uuid, title);
-    //   expect(tasks).toStrictEqual(expected);
-    // });
+      const tasks = await deleteTodo(uuid);
+      expect(tasks).toStrictEqual(expected);
+    });
   });
 });
