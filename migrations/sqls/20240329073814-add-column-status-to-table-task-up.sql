@@ -1,0 +1,6 @@
+CREATE TYPE status AS ENUM('DONE', 'IN_PROGRESS');
+
+ALTER TABLE
+  public.task
+ADD COLUMN
+  status status NOT NULL DEFAULT 'IN_PROGRESS';
