@@ -44,7 +44,7 @@ We have two projects here.
 
 I'm using [pnpm](https://pnpm.io/) as package manager
 
-1. Copy the `.env.example` to `.env`, and ask other contributors for DB password or setup a new DB, and assign the password `DB_PASSWORD`.
+1. Copy the `.env.example` to `.env`, and ask other contributors for DB details or setup a new DB, and assign those info accordingly.
 2. If you create a new DB
    1. Change the variables in `.env` accordingly.
    2. Run the `pnpm run db:mu` to migrate the tables.
