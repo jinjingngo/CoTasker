@@ -15,17 +15,17 @@ We have two projects here.
 .
 ├── app
 ├── co-tasker-stream
-│   ├── src
-│   ├── test
+│ ├── src
+│ ├── test
 ├── migrations
-│   ├── 20240327191526-create-todo.js
-│   └── sqls
-│       ├── 20240327191526-create-todo-down.sql
-│       └── 20240327191526-create-todo-up.sql
+│ ├── 20240327191526-create-todo.js
+│ └── sqls
+│ ├── 20240327191526-create-todo-down.sql
+│ └── 20240327191526-create-todo-up.sql
 ├── scripts
-│   └── run_schemats.sh
+│ └── run_schemats.sh
 └── shared
-│   └── schemas.ts
+│ └── schemas.ts
 └── database.json
 ```
 

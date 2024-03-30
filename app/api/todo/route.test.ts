@@ -6,37 +6,37 @@ import {
   it,
   MockInstance,
   afterEach,
-} from "vitest";
-import { NextRequest } from "next/server";
+} from 'vitest';
+import { NextRequest } from 'next/server';
 
-import { GET, POST } from "./route";
-import { TEST_BASE_URL } from "../../util";
-import * as todo from "../db/todo";
+import { GET, POST } from './route';
+import { TEST_BASE_URL } from '../../util';
+import * as todo from '../db/todo';
 import {
   CLIENT_ERROR,
   CLIENT_ERROR_CODE,
   HTTP_OK_CODE,
   SERVER_ERROR,
   SERVER_ERROR_CODE,
-} from "../common_error";
+} from '../common_error';
 
-describe("Todo Route Handlers", () => {
-  describe("GET /api/todo", () => {
+describe('Todo Route Handlers', () => {
+  describe('GET /api/todo', () => {
     let spy: MockInstance | null;
     let url: URL | null;
     let req: NextRequest | null;
 
     beforeEach(() => {
-      url = new URL("/", TEST_BASE_URL);
+      url = new URL('/', TEST_BASE_URL);
       req = new NextRequest(url!);
-      spy = vi.spyOn(todo, "queryTodos");
+      spy = vi.spyOn(todo, 'queryTodos');
     });
 
     afterEach(() => {
       vi.resetAllMocks();
     });
 
-    it("should return Server Error", async () => {
+    it('should return Server Error', async () => {
       spy!.mockImplementationOnce(() => undefined);
       const res = await GET(req!);
       const body = await res.json();
@@ -45,7 +45,7 @@ describe("Todo Route Handlers", () => {
       expect(res.status).toBe(SERVER_ERROR_CODE.status);
     });
 
-    it("should return todos", async () => {
+    it('should return todos', async () => {
       const expected = { todo: [], total: 0 };
 
       spy!.mockImplementationOnce(() => expected);
@@ -57,20 +57,20 @@ describe("Todo Route Handlers", () => {
     });
   });
 
-  describe("POST /api/todo", () => {
+  describe('POST /api/todo', () => {
     let spy: MockInstance | null;
     let url: URL | null;
 
     beforeEach(() => {
-      url = new URL("/", TEST_BASE_URL);
-      spy = vi.spyOn(todo, "createTodo");
+      url = new URL('/', TEST_BASE_URL);
+      spy = vi.spyOn(todo, 'createTodo');
     });
 
     afterEach(() => {
       vi.resetAllMocks();
     });
 
-    it("should return Client Error because request is `undefined`", async () => {
+    it('should return Client Error because request is `undefined`', async () => {
       const req = new NextRequest(url!, {});
       const res = await POST(req);
       const body = await res.json();
@@ -79,9 +79,9 @@ describe("Todo Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Client Error because request body is `undefined`", async () => {
+    it('should return Client Error because request body is `undefined`', async () => {
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
       });
       const res = await POST(req);
       const data = await res.json();
@@ -90,9 +90,9 @@ describe("Todo Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Client Error because `title` is missing in request body", async () => {
+    it('should return Client Error because `title` is missing in request body', async () => {
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify({}),
       });
       const res = await POST(req);
@@ -102,14 +102,14 @@ describe("Todo Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Server Error because `createTodo` returns undefined", async () => {
+    it('should return Server Error because `createTodo` returns undefined', async () => {
       spy!.mockImplementationOnce(() => undefined);
       const payload = {
-        title: "ToDo the First Born",
+        title: 'ToDo the First Born',
       };
 
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify(payload),
       });
       const res = await POST(req);
@@ -119,14 +119,14 @@ describe("Todo Route Handlers", () => {
       expect(res.status).toBe(SERVER_ERROR_CODE.status);
     });
 
-    it("should return a todo", async () => {
+    it('should return a todo', async () => {
       const expected = {
-        title: "ToDo the First Born",
+        title: 'ToDo the First Born',
       };
       spy!.mockImplementationOnce(() => expected);
 
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify(expected),
       });
       const res = await POST(req);

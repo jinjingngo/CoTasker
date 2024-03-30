@@ -6,25 +6,25 @@ import {
   vi,
   it,
   expect,
-} from "vitest";
-import { Pool } from "pg";
+} from 'vitest';
+import { Pool } from 'pg';
 
-import * as db from "../client/db";
-import { queryTodos, createTodo, updateTodo, deleteTodo } from "./todo";
+import * as db from '../client/db';
+import { queryTodos, createTodo, updateTodo, deleteTodo } from './todo';
 
-describe("DB Todo", () => {
+describe('DB Todo', () => {
   let spy: MockInstance<[], Pool> | null = null;
 
   beforeEach(() => {
-    spy = vi.spyOn(db, "getDBPool");
+    spy = vi.spyOn(db, 'getDBPool');
   });
 
   afterEach(() => {
     vi.resetAllMocks();
   });
 
-  describe("queryTodo", () => {
-    it("should return `undefined` because `getDBPool()` throws an error", async () => {
+  describe('queryTodo', () => {
+    it('should return `undefined` because `getDBPool()` throws an error', async () => {
       spy!.mockImplementationOnce(() => {
         throw Error();
       });
@@ -33,7 +33,7 @@ describe("DB Todo", () => {
       expect(todos).toBeUndefined();
     });
 
-    it("should return `undefined` because `query()` throws an error", async () => {
+    it('should return `undefined` because `query()` throws an error', async () => {
       spy!.mockImplementationOnce(() => {
         return {
           query: () => {
@@ -45,7 +45,7 @@ describe("DB Todo", () => {
       expect(todos).toBeUndefined();
     });
 
-    it("should return expected object", async () => {
+    it('should return expected object', async () => {
       spy!.mockImplementation(() => {
         return {
           query: (_query: string, values: []) => {
@@ -59,9 +59,9 @@ describe("DB Todo", () => {
     });
   });
 
-  describe("createTodo", () => {
-    const title = "Todo the First Born";
-    it("should return `undefined` because `getDBPool()` throws an error", async () => {
+  describe('createTodo', () => {
+    const title = 'Todo the First Born';
+    it('should return `undefined` because `getDBPool()` throws an error', async () => {
       spy!.mockImplementationOnce(() => {
         throw Error();
       });
@@ -70,7 +70,7 @@ describe("DB Todo", () => {
       expect(todo).toBeUndefined();
     });
 
-    it("should return `undefined` because `query()` throws an error", async () => {
+    it('should return `undefined` because `query()` throws an error', async () => {
       spy!.mockImplementationOnce(() => {
         return {
           query: () => {
@@ -82,7 +82,7 @@ describe("DB Todo", () => {
       expect(todo).toBeUndefined();
     });
 
-    it("should return expected object", async () => {
+    it('should return expected object', async () => {
       const expected = { title };
       spy!.mockImplementation(() => {
         return {
@@ -99,10 +99,10 @@ describe("DB Todo", () => {
     });
   });
 
-  describe("updateTodo", () => {
-    const uuid = "16dc70fc-4089-47ee-9006-4c91b9547602";
-    const title = "Todo the Updated Born";
-    it("should return `undefined` because `getDBPool()` throws an error", async () => {
+  describe('updateTodo', () => {
+    const uuid = '16dc70fc-4089-47ee-9006-4c91b9547602';
+    const title = 'Todo the Updated Born';
+    it('should return `undefined` because `getDBPool()` throws an error', async () => {
       spy!.mockImplementationOnce(() => {
         throw Error();
       });
@@ -111,7 +111,7 @@ describe("DB Todo", () => {
       expect(todo).toBeUndefined();
     });
 
-    it("should return `undefined` because `query()` throws an error", async () => {
+    it('should return `undefined` because `query()` throws an error', async () => {
       spy!.mockImplementationOnce(() => {
         return {
           query: () => {
@@ -123,7 +123,7 @@ describe("DB Todo", () => {
       expect(todo).toBeUndefined();
     });
 
-    it("should return expected object", async () => {
+    it('should return expected object', async () => {
       const expected = { uuid, title };
       spy!.mockImplementation(() => {
         return {
@@ -140,9 +140,9 @@ describe("DB Todo", () => {
     });
   });
 
-  describe("deleteTodo", () => {
-    const uuid = "16dc70fc-4089-47ee-9006-4c91b9547602";
-    it("should return `undefined` because `getDBPool()` throws an error", async () => {
+  describe('deleteTodo', () => {
+    const uuid = '16dc70fc-4089-47ee-9006-4c91b9547602';
+    it('should return `undefined` because `getDBPool()` throws an error', async () => {
       spy!.mockImplementationOnce(() => {
         throw Error();
       });
@@ -151,7 +151,7 @@ describe("DB Todo", () => {
       expect(todo).toBeUndefined();
     });
 
-    it("should return `undefined` because `query()` throws an error", async () => {
+    it('should return `undefined` because `query()` throws an error', async () => {
       spy!.mockImplementationOnce(() => {
         return {
           query: () => {
@@ -163,7 +163,7 @@ describe("DB Todo", () => {
       expect(todo).toBeUndefined();
     });
 
-    it("should return expected object", async () => {
+    it('should return expected object', async () => {
       const expected = { rowCount: 1 };
       spy!.mockImplementation(() => {
         return {

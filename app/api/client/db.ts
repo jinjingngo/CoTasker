@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool } from 'pg';
 
 let pool: Pool | null = null;
 
@@ -6,17 +6,17 @@ const getConnectionConfig = () => {
   const { DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD, DB_SSL_MODE } =
     process.env;
   if (!DB_HOST)
-    throw Error("Please set the `DB_HOST` as an environment variable");
+    throw Error('Please set the `DB_HOST` as an environment variable');
   if (!DB_PORT)
-    throw Error("Please set the `DB_PORT` as an environment variable");
+    throw Error('Please set the `DB_PORT` as an environment variable');
   if (!DB_NAME)
-    throw Error("Please set the `DB_NAME` as an environment variable");
+    throw Error('Please set the `DB_NAME` as an environment variable');
   if (!DB_USERNAME)
-    throw Error("Please set the `DB_USERNAME` as an environment variable");
+    throw Error('Please set the `DB_USERNAME` as an environment variable');
   if (!DB_PASSWORD)
-    throw Error("Please set the `DB_PASSWORD` as an environment variable");
+    throw Error('Please set the `DB_PASSWORD` as an environment variable');
   if (!DB_SSL_MODE)
-    throw Error("Please set the `DB_SSL_MODE` as an environment variable");
+    throw Error('Please set the `DB_SSL_MODE` as an environment variable');
 
   return {
     host: DB_HOST,
@@ -24,7 +24,7 @@ const getConnectionConfig = () => {
     database: DB_NAME,
     user: DB_USERNAME,
     password: DB_PASSWORD,
-    ssl: DB_SSL_MODE === "true" ? true : false,
+    ssl: DB_SSL_MODE === 'true' ? true : false,
     idleTimeoutMillis: 30 * 1000, // 30 seconds
   };
 };
@@ -62,9 +62,9 @@ const getDBPool = () => {
  * So no where to call this destroy function, only can rely on `idleTimeoutMillis`
  */
 const destroyDBPool = async () => {
-  console.info("[DB] releasing `pool`.");
+  console.info('[DB] releasing `pool`.');
   await pool?.end();
-  console.info("[DB] `pool` has been released");
+  console.info('[DB] `pool` has been released');
 };
 
 export { getDBPool, destroyDBPool };

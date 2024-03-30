@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 import {
   CLIENT_ERROR,
   CLIENT_ERROR_CODE,
   HTTP_OK_CODE,
   SERVER_ERROR,
   SERVER_ERROR_CODE,
-} from "../../common_error";
-import { createTask, queryTasksByTodoUUID } from "../../db/task";
-import { PathParam, PostTask } from "../../types";
-import { validate } from "uuid";
+} from '../../common_error';
+import { createTask, queryTasksByTodoUUID } from '../../db/task';
+import { PathParam, PostTask } from '../../types';
+import { validate } from 'uuid';
 
 export async function GET(_: NextRequest, pathParam: PathParam) {
   try {
@@ -26,7 +26,7 @@ export async function GET(_: NextRequest, pathParam: PathParam) {
       status: tasks ? HTTP_OK_CODE.status : SERVER_ERROR_CODE.status,
     });
   } catch (error) {
-    console.error("[API task > GET] error: ", error);
+    console.error('[API task > GET] error: ', error);
     return NextResponse.json(CLIENT_ERROR, CLIENT_ERROR_CODE);
   }
 }
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest, pathParam: PathParam) {
       status: insertedTask ? HTTP_OK_CODE.status : SERVER_ERROR_CODE.status,
     });
   } catch (error) {
-    console.error("[API task > POST] error: ", error);
+    console.error('[API task > POST] error: ', error);
     return NextResponse.json(CLIENT_ERROR, CLIENT_ERROR_CODE);
   }
 }
