@@ -1,7 +1,7 @@
-import { Task } from "@/shared/schemas";
-import { getDBPool } from "../client/db";
-import { PostTask, UpdateTask } from "../types";
-import { QueryResultBase } from "pg";
+import { Task } from '@/shared/schemas';
+import { getDBPool } from '../client/db';
+import { PostTask, UpdateTask } from '../types';
+import { QueryResultBase } from 'pg';
 
 export const queryTasksByTodoUUID = async (uuid: string) => {
   try {
@@ -26,7 +26,7 @@ export const queryTasksByTodoUUID = async (uuid: string) => {
 
     return rows;
   } catch (error) {
-    console.error("[DB > task > queryTaskByTodoUUID] ", error);
+    console.error('[DB > task > queryTaskByTodoUUID] ', error);
   }
   return;
 };
@@ -41,7 +41,7 @@ export const createTask = async (task: PostTask) => {
       `created_date`,
       `updated_date`,
     ];
-    const params: (string | number)[] = [title, status, "now()", "now()"];
+    const params: (string | number)[] = [title, status, 'now()', 'now()'];
     if (parent_id !== undefined && parent_id !== null) {
       fields.push(`parent_id`);
       params.push(parent_id);
@@ -53,11 +53,11 @@ export const createTask = async (task: PostTask) => {
 
     const sql = `
       INSERT INTO
-        public.task (${fields.join(", ")})
+        public.task (${fields.join(', ')})
       VALUES
         (
           (SELECT id FROM public.todo WHERE uuid = $1),
-          ${params.map((_, index) => `$${index + 2}`).join(", ")}
+          ${params.map((_, index) => `$${index + 2}`).join(', ')}
         )
       RETURNING *`;
     params.unshift(uuid);
@@ -69,7 +69,7 @@ export const createTask = async (task: PostTask) => {
 
     return insertedTask;
   } catch (error) {
-    console.error("[DB > task > createTask] ", error);
+    console.error('[DB > task > createTask] ', error);
   }
   return;
 };
@@ -102,7 +102,7 @@ export const updateTask = async (task: UpdateTask) => {
       UPDATE
         public.task
       SET
-        ${fields.join(", ")}
+        ${fields.join(', ')}
       WHERE
         id = $1
       RETURNING *`;
@@ -116,7 +116,7 @@ export const updateTask = async (task: UpdateTask) => {
 
     return updatedTask;
   } catch (error) {
-    console.error("[DB > task > updateTask] ", error);
+    console.error('[DB > task > updateTask] ', error);
   }
   return;
 };
@@ -132,7 +132,7 @@ export const deleteTask = async (id: number) => {
 
     return result;
   } catch (error) {
-    console.error("[DB > task > deleteTask] ", error);
+    console.error('[DB > task > deleteTask] ', error);
   }
   return;
 };

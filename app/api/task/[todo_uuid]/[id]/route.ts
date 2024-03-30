@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { validate } from "uuid";
-import { deleteTask, updateTask } from "../../../db/task";
+import { NextRequest, NextResponse } from 'next/server';
+import { validate } from 'uuid';
+import { deleteTask, updateTask } from '../../../db/task';
 import {
   CLIENT_CLONE_ERROR,
   CLIENT_ERROR,
@@ -9,9 +9,9 @@ import {
   HTTP_OK_CODE,
   SERVER_ERROR,
   SERVER_ERROR_CODE,
-} from "../../../common_error";
+} from '../../../common_error';
 
-import type { UpdatePathParam, UpdateTask } from "@/app/api/types";
+import type { UpdatePathParam, UpdateTask } from '@/app/api/types';
 
 export async function PATCH(request: NextRequest, pathParam: UpdatePathParam) {
   try {
@@ -66,7 +66,7 @@ export async function PATCH(request: NextRequest, pathParam: UpdatePathParam) {
       status: updatedTask ? HTTP_OK_CODE.status : SERVER_ERROR_CODE.status,
     });
   } catch (error) {
-    console.error("[API task > PATCH] error: ", error);
+    console.error('[API task > PATCH] error: ', error);
     return NextResponse.json(CLIENT_ERROR, CLIENT_ERROR_CODE);
   }
 }

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { validate } from "uuid";
+import { NextRequest, NextResponse } from 'next/server';
+import { validate } from 'uuid';
 import {
   CLIENT_ERROR,
   CLIENT_ERROR_CODE,
@@ -7,15 +7,15 @@ import {
   HTTP_OK_CODE,
   SERVER_ERROR,
   SERVER_ERROR_CODE,
-} from "../../common_error";
-import { Todo } from "@/shared/schemas";
-import { deleteTodo, updateTodo } from "../../db/todo";
+} from '../../common_error';
+import { Todo } from '@/shared/schemas';
+import { deleteTodo, updateTodo } from '../../db/todo';
 
 type DeletePathParam = { params: { uuid: string } };
 
 type PatchPathParam = DeletePathParam;
 
-type PatchBody = Pick<Todo, "title">;
+type PatchBody = Pick<Todo, 'title'>;
 
 export async function PATCH(request: NextRequest, { params }: PatchPathParam) {
   try {
@@ -48,7 +48,7 @@ export async function PATCH(request: NextRequest, { params }: PatchPathParam) {
       status: todo ? HTTP_OK_CODE.status : SERVER_ERROR_CODE.status,
     });
   } catch (error) {
-    console.error("[API todo > PATCH] error: ", error);
+    console.error('[API todo > PATCH] error: ', error);
     return NextResponse.json(CLIENT_ERROR, CLIENT_ERROR_CODE);
   }
 }

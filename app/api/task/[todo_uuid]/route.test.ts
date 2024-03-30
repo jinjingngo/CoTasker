@@ -6,11 +6,11 @@ import {
   MockInstance,
   afterEach,
   vi,
-} from "vitest";
-import { NextRequest } from "next/server";
+} from 'vitest';
+import { NextRequest } from 'next/server';
 
-import { GET, POST } from "./route";
-import { TEST_BASE_URL } from "../../../util";
+import { GET, POST } from './route';
+import { TEST_BASE_URL } from '../../../util';
 import {
   CLIENT_ERROR,
   CLIENT_ERROR_CODE,
@@ -18,27 +18,27 @@ import {
   HTTP_OK_CODE,
   SERVER_ERROR,
   SERVER_ERROR_CODE,
-} from "../../common_error";
-import * as task from "../../db/task";
+} from '../../common_error';
+import * as task from '../../db/task';
 
-describe("Task Route Handlers", () => {
+describe('Task Route Handlers', () => {
   let spy: MockInstance | null;
-  let url: URL = new URL("/", TEST_BASE_URL);
-  const fake_slug = { params: { todo_uuid: "fake_uuid" } };
+  let url: URL = new URL('/', TEST_BASE_URL);
+  const fake_slug = { params: { todo_uuid: 'fake_uuid' } };
   const slug = {
-    params: { todo_uuid: "16dc70fc-4089-47ee-9006-4c91b9547602" },
+    params: { todo_uuid: '16dc70fc-4089-47ee-9006-4c91b9547602' },
   };
 
   afterEach(() => {
     vi.resetAllMocks();
   });
 
-  describe("GET /api/task/:todo_uuid", () => {
+  describe('GET /api/task/:todo_uuid', () => {
     beforeEach(() => {
-      spy = vi.spyOn(task, "queryTasksByTodoUUID");
+      spy = vi.spyOn(task, 'queryTasksByTodoUUID');
     });
 
-    it("should return Client Error because uuid is not valid", async () => {
+    it('should return Client Error because uuid is not valid', async () => {
       const req = new NextRequest(url!);
       const res = await GET(req, fake_slug);
 
@@ -47,7 +47,7 @@ describe("Task Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Server Error because ", async () => {
+    it('should return Server Error because ', async () => {
       spy!.mockResolvedValue(undefined);
       const req = new NextRequest(url!, {});
 
@@ -58,7 +58,7 @@ describe("Task Route Handlers", () => {
       expect(res.status).toBe(SERVER_ERROR_CODE.status);
     });
 
-    it("should return Server Error because ", async () => {
+    it('should return Server Error because ', async () => {
       spy!.mockResolvedValue([]);
       const req = new NextRequest(url!, {});
 
@@ -70,12 +70,12 @@ describe("Task Route Handlers", () => {
     });
   });
 
-  describe("POST /api/task/:todo_uuid", () => {
+  describe('POST /api/task/:todo_uuid', () => {
     beforeEach(() => {
-      spy = vi.spyOn(task, "createTask");
+      spy = vi.spyOn(task, 'createTask');
     });
 
-    it("should return Client Error because uuid is not valid", async () => {
+    it('should return Client Error because uuid is not valid', async () => {
       const req = new NextRequest(url!);
       const res = await POST(req, fake_slug);
 
@@ -84,7 +84,7 @@ describe("Task Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Client Error request is `undefined`", async () => {
+    it('should return Client Error request is `undefined`', async () => {
       const req = new NextRequest(url!, {});
 
       const res = await POST(req, slug);
@@ -94,9 +94,9 @@ describe("Task Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Client Error because request body is `undefined`", async () => {
+    it('should return Client Error because request body is `undefined`', async () => {
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
       });
       const res = await POST(req, slug);
       const data = await res.json();
@@ -105,9 +105,9 @@ describe("Task Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Server Error because request `title` is `undefined`", async () => {
+    it('should return Server Error because request `title` is `undefined`', async () => {
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify({}),
       });
       const res = await POST(req, slug);
@@ -117,11 +117,11 @@ describe("Task Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Server Error because request `status` is `undefined`", async () => {
+    it('should return Server Error because request `status` is `undefined`', async () => {
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify({
-          title: "Task the First Born",
+          title: 'Task the First Born',
         }),
       });
       const res = await POST(req, slug);
@@ -131,15 +131,15 @@ describe("Task Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Server Error because `createTask` returns `undefined`", async () => {
+    it('should return Server Error because `createTask` returns `undefined`', async () => {
       spy!.mockResolvedValue(undefined);
       const payload = {
-        title: "Task the First Born",
-        status: "IN_PROGRESS",
+        title: 'Task the First Born',
+        status: 'IN_PROGRESS',
       };
 
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify(payload),
       });
       const res = await POST(req, slug);
@@ -149,15 +149,15 @@ describe("Task Route Handlers", () => {
       expect(res.status).toBe(SERVER_ERROR_CODE.status);
     });
 
-    it("should return a task because `createTask` returns expected value", async () => {
+    it('should return a task because `createTask` returns expected value', async () => {
       const expected = {
-        title: "Task the First Born",
-        status: "IN_PROGRESS",
+        title: 'Task the First Born',
+        status: 'IN_PROGRESS',
       };
       spy!.mockResolvedValue(expected);
 
       const req = new NextRequest(url!, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify(expected),
       });
       const res = await POST(req, slug);

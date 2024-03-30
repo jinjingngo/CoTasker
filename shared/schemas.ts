@@ -1,4 +1,3 @@
-
 /**
  * AUTO-GENERATED FILE @ Fri, 29 Mar 2024 07:54:47 GMT - DO NOT EDIT!
  *
@@ -7,35 +6,35 @@
  *
  */
 
-export type Status = 'IN_PROGRESS' | 'DONE'
+export type Status = 'IN_PROGRESS' | 'DONE';
 
-export interface Todo { 
-  id: number
-  uuid: string
-  title: string
-  created_date: Date
-  updated_date: Date 
+export interface Todo {
+  id: number;
+  uuid: string;
+  title: string;
+  created_date: Date;
+  updated_date: Date;
 }
 
-export interface Task { 
-  id: number
-  todo_id: number
-  parent_id?: number | null
-  title: string
-  notes?: string | null
-  created_date: Date
-  updated_date: Date
-  status: Status 
+export interface Task {
+  id: number;
+  todo_id: number;
+  parent_id?: number | null;
+  title: string;
+  notes?: string | null;
+  created_date: Date;
+  updated_date: Date;
+  status: Status;
 }
 
-export interface Migrations { 
-  id: number
-  name: string
-  run_on: Date 
+export interface Migrations {
+  id: number;
+  name: string;
+  run_on: Date;
 }
 
 export interface Tables {
-  todo: Todo,
-  task: Task,
-  migrations: Migrations
+  todo: Todo;
+  task: Task;
+  migrations: Migrations;
 }

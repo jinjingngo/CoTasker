@@ -1,7 +1,7 @@
-import { v4 as uuid } from "uuid";
-import { Todo } from "@/shared/schemas";
-import { getDBPool } from "../client/db";
-import { QueryResultBase } from "pg";
+import { v4 as uuid } from 'uuid';
+import { Todo } from '@/shared/schemas';
+import { getDBPool } from '../client/db';
+import { QueryResultBase } from 'pg';
 
 type TodoQueryResult =
   | {
@@ -16,7 +16,7 @@ type TodoUpdateResult = TodoCreateResult;
 
 export const queryTodos = async (
   offset: number,
-  limit: number
+  limit: number,
 ): Promise<TodoQueryResult> => {
   try {
     const sql = `SELECT
@@ -46,7 +46,7 @@ export const queryTodos = async (
 
     return { todo: rows, total };
   } catch (error) {
-    console.error("[DB > todo > queryTodos] ", error);
+    console.error('[DB > todo > queryTodos] ', error);
   }
   return;
 };
@@ -66,14 +66,14 @@ export const createTodo = async (title: string): Promise<TodoCreateResult> => {
 
     return todo;
   } catch (error) {
-    console.error("[DB > todo > createTodo] ", error);
+    console.error('[DB > todo > createTodo] ', error);
   }
   return;
 };
 
 export const updateTodo = async (
   uuid: string,
-  title: string
+  title: string,
 ): Promise<TodoUpdateResult> => {
   try {
     const sql = `UPDATE
@@ -91,7 +91,7 @@ export const updateTodo = async (
 
     return todo;
   } catch (error) {
-    console.error("[DB > todo > updateTodo] ", error);
+    console.error('[DB > todo > updateTodo] ', error);
   }
   return;
 };
@@ -107,7 +107,7 @@ export const deleteTodo = async (uuid: string) => {
 
     return result;
   } catch (error) {
-    console.error("[DB > todo > deleteTodo] ", error);
+    console.error('[DB > todo > deleteTodo] ', error);
   }
   return;
 };

@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { TODO_PAGINATION_LIMIT } from "../../util";
-import { createTodo, queryTodos } from "../db/todo";
-import { Todo } from "@/shared/schemas";
+import { NextRequest, NextResponse } from 'next/server';
+import { TODO_PAGINATION_LIMIT } from '../../util';
+import { createTodo, queryTodos } from '../db/todo';
+import { Todo } from '@/shared/schemas';
 import {
   HTTP_OK_CODE,
   SERVER_ERROR,
   SERVER_ERROR_CODE,
   CLIENT_ERROR,
   CLIENT_ERROR_CODE,
-} from "../common_error";
+} from '../common_error';
 
 type TodoCreateRequest = Partial<Todo> | undefined;
 
@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
     nextUrl: { searchParams },
   } = request;
 
-  const offset = searchParams.get("offset") || 0;
-  const limit = searchParams.get("limit") || TODO_PAGINATION_LIMIT;
+  const offset = searchParams.get('offset') || 0;
+  const limit = searchParams.get('limit') || TODO_PAGINATION_LIMIT;
 
   const todos = await queryTodos(Number(offset), Number(limit));
   if (!todos) {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       status: todo ? HTTP_OK_CODE.status : SERVER_ERROR_CODE.status,
     });
   } catch (error) {
-    console.error("[API todo > POST] error: ", error);
+    console.error('[API todo > POST] error: ', error);
     return NextResponse.json(CLIENT_ERROR, CLIENT_ERROR_CODE);
   }
 }
