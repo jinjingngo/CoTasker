@@ -20,17 +20,17 @@ export const queryTodos = async (
 ): Promise<TodoQueryResult> => {
   try {
     const sql = `SELECT
-      *
-    FROM
-      public.todo
-    ORDER BY updated_date DESC
-    OFFSET $1
-    LIMIT $2`;
+        *
+      FROM
+        public.todo
+      ORDER BY updated_date DESC
+      OFFSET $1
+      LIMIT $2`;
 
     const countSql = `SELECT
-      CAST(COUNT(id) AS INTEGER) AS total
-    FROM
-      public.todo`;
+        CAST(COUNT(id) AS INTEGER) AS total
+      FROM
+        public.todo`;
 
     const pool = getDBPool();
 
@@ -54,10 +54,10 @@ export const queryTodos = async (
 export const createTodo = async (title: string): Promise<TodoCreateResult> => {
   try {
     const sql = `INSERT INTO
-      public.todo (uuid, title)
-    VALUES
-      ($1, $2)
-    RETURNING *`;
+        public.todo (uuid, title)
+      VALUES
+        ($1, $2)
+      RETURNING *`;
 
     const pool = getDBPool();
     const {
@@ -77,12 +77,12 @@ export const updateTodo = async (
 ): Promise<TodoUpdateResult> => {
   try {
     const sql = `UPDATE
-      public.todo
-    SET
-      title=$2, updated_date=now()
-    WHERE
-      uuid = $1
-    RETURNING *`;
+        public.todo
+      SET
+        title=$2, updated_date=now()
+      WHERE
+        uuid = $1
+      RETURNING *`;
 
     const pool = getDBPool();
     const {
@@ -99,8 +99,8 @@ export const updateTodo = async (
 export const deleteTodo = async (uuid: string) => {
   try {
     const sql = `DELETE FROM
-      public.todo
-    WHERE uuid = $1`;
+        public.todo
+      WHERE uuid = $1`;
 
     const pool = getDBPool();
     const result = await pool.query<QueryResultBase>(sql, [uuid]);
