@@ -25,8 +25,8 @@ describe('Todo Route Handlers', () => {
   let spy: MockInstance | null;
   let url = new URL('/', TEST_BASE_URL);
   let req = new NextRequest(url!);
-  const fake_slug = { params: { uuid: 'fake_uuid' } };
-  const slug = { params: { uuid: '16dc70fc-4089-47ee-9006-4c91b9547602' } };
+  const fakeContext = { params: { uuid: 'fake_uuid' } };
+  const context = { params: { uuid: '16dc70fc-4089-47ee-9006-4c91b9547602' } };
 
   afterEach(() => {
     vi.resetAllMocks();
@@ -38,7 +38,7 @@ describe('Todo Route Handlers', () => {
     });
 
     it('should return Client Error because uuid is not valid', async () => {
-      const res = await PATCH(req!, fake_slug);
+      const res = await PATCH(req!, fakeContext);
       const body = await res.json();
 
       expect(body).toEqual(CLIENT_ERROR);
@@ -48,7 +48,7 @@ describe('Todo Route Handlers', () => {
     it('should return Client Error because request is `undefined`', async () => {
       const req = new NextRequest(url!, {});
 
-      const res = await PATCH(req, slug);
+      const res = await PATCH(req, context);
       const body = await res.json();
 
       expect(body).toEqual(CLIENT_ERROR);
@@ -59,7 +59,7 @@ describe('Todo Route Handlers', () => {
       const req = new NextRequest(url!, {
         method: 'PATCH',
       });
-      const res = await PATCH(req, slug);
+      const res = await PATCH(req, context);
       const data = await res.json();
 
       expect(data).toEqual(CLIENT_ERROR);
@@ -71,7 +71,7 @@ describe('Todo Route Handlers', () => {
         method: 'PATCH',
         body: JSON.stringify({}),
       });
-      const res = await PATCH(req, slug);
+      const res = await PATCH(req, context);
       const data = await res.json();
 
       expect(data).toEqual(CLIENT_ERROR);
@@ -88,7 +88,7 @@ describe('Todo Route Handlers', () => {
         method: 'PATCH',
         body: JSON.stringify(payload),
       });
-      const res = await PATCH(req, slug);
+      const res = await PATCH(req, context);
       const data = await res.json();
 
       expect(data).toEqual(SERVER_ERROR);
@@ -105,7 +105,7 @@ describe('Todo Route Handlers', () => {
         method: 'PATCH',
         body: JSON.stringify(expected),
       });
-      const res = await PATCH(req, slug);
+      const res = await PATCH(req, context);
       const data = await res.json();
 
       expect(data).toEqual(expected);
@@ -119,7 +119,7 @@ describe('Todo Route Handlers', () => {
     });
 
     it('should return Client Error because uuid is not valid', async () => {
-      const res = await DELETE(req!, fake_slug);
+      const res = await DELETE(req!, fakeContext);
       const body = await res.json();
 
       expect(body).toEqual(CLIENT_ERROR);
@@ -130,7 +130,7 @@ describe('Todo Route Handlers', () => {
       spy!.mockImplementationOnce(() => undefined);
 
       const req = new NextRequest(url!);
-      const res = await DELETE(req, slug);
+      const res = await DELETE(req, context);
       const data = await res.json();
 
       expect(data).toEqual(SERVER_ERROR);
@@ -141,7 +141,7 @@ describe('Todo Route Handlers', () => {
       spy!.mockResolvedValue({ rowCount: 0 });
 
       const req = new NextRequest(url!);
-      const res = await DELETE(req, slug);
+      const res = await DELETE(req, context);
       const data = await res.json();
 
       expect(data).toEqual(CLIENT_ERROR);
@@ -152,7 +152,7 @@ describe('Todo Route Handlers', () => {
       spy!.mockResolvedValue({ rowCount: 1 });
 
       const req = new NextRequest(url!);
-      const res = await DELETE(req, slug);
+      const res = await DELETE(req, context);
       const data = await res.json();
 
       expect(data).toEqual(HTTP_OK);
