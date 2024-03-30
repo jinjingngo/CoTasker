@@ -70,7 +70,7 @@ describe("Todo Route Handlers", () => {
       vi.resetAllMocks();
     });
 
-    it("should return Client Error", async () => {
+    it("should return Client Error because request is `undefined`", async () => {
       const req = new NextRequest(url!, {});
       const res = await POST(req);
       const body = await res.json();
@@ -79,7 +79,7 @@ describe("Todo Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Server Error because request body is `undefined`", async () => {
+    it("should return Client Error because request body is `undefined`", async () => {
       const req = new NextRequest(url!, {
         method: "POST",
       });
@@ -90,7 +90,7 @@ describe("Todo Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Server Error because `title` is missing in request body", async () => {
+    it("should return Client Error because `title` is missing in request body", async () => {
       const req = new NextRequest(url!, {
         method: "POST",
         body: JSON.stringify({}),
@@ -102,7 +102,7 @@ describe("Todo Route Handlers", () => {
       expect(res.status).toBe(CLIENT_ERROR_CODE.status);
     });
 
-    it("should return Server Error", async () => {
+    it("should return Server Error because `createTodo` returns undefined", async () => {
       spy!.mockImplementationOnce(() => undefined);
       const payload = {
         title: "ToDo the First Born",

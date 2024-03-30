@@ -69,7 +69,7 @@ export async function DELETE(_: NextRequest, { params }: DeletePathParam) {
 
   const { rowCount } = result;
 
-  return NextResponse.json(rowCount ? HTTP_OK : SERVER_ERROR, {
-    status: rowCount ? HTTP_OK_CODE.status : SERVER_ERROR_CODE.status,
+  return NextResponse.json(rowCount ? HTTP_OK : CLIENT_ERROR, {
+    status: rowCount ? HTTP_OK_CODE.status : CLIENT_ERROR_CODE.status,
   });
 }
