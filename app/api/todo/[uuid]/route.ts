@@ -11,13 +11,13 @@ import {
 import { Todo } from '@/shared/schemas';
 import { deleteTodo, updateTodo } from '../../db/todo';
 
-type DeletePathParam = { params: { uuid: string } };
+type DeleteContext = { params: { uuid: string } };
 
-type PatchPathParam = DeletePathParam;
+type PatchContext = DeleteContext;
 
 type PatchBody = Pick<Todo, 'title'>;
 
-export async function PATCH(request: NextRequest, { params }: PatchPathParam) {
+export async function PATCH(request: NextRequest, { params }: PatchContext) {
   try {
     const { uuid } = params;
     const isValid = validate(uuid);
@@ -53,7 +53,7 @@ export async function PATCH(request: NextRequest, { params }: PatchPathParam) {
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: DeletePathParam) {
+export async function DELETE(_: NextRequest, { params }: DeleteContext) {
   const { uuid } = params;
   const isValid = validate(uuid);
 

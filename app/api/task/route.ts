@@ -1,7 +1,5 @@
-import { queryTasksByTodoUUID } from '../db/task';
+import { HTTP_OK_CODE } from '../common_error';
 
-export async function GET(request: Request) {
-  return new Response('Tasks!', {
-    status: 200,
-  });
+export async function GET(_: Request) {
+  return Response.json([], HTTP_OK_CODE);
 }
