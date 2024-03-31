@@ -14,7 +14,6 @@ import { TEST_BASE_URL } from '../../../util';
 import {
   CLIENT_ERROR,
   CLIENT_ERROR_CODE,
-  HTTP_OK,
   HTTP_OK_CODE,
   SERVER_ERROR,
   SERVER_ERROR_CODE,

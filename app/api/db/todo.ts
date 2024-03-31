@@ -1,14 +1,10 @@
 import { v4 as uuid } from 'uuid';
-import { Todo } from '@/shared/schemas';
-import { getDBPool } from '../client/db';
 import { QueryResultBase } from 'pg';
 
-type TodoQueryResult =
-  | {
-      todo: Todo[];
-      total: number;
-    }
-  | undefined;
+import { getDBPool } from '../client/db';
+
+import type { Todo } from '@/shared/schemas';
+import type { TodoQueryResult } from '@/app/types';
 
 type TodoCreateResult = Todo | undefined;
 
