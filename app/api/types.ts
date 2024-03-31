@@ -8,9 +8,3 @@ export type PostTask = Omit<
   Pick<Todo, 'uuid'>;
 
 export type UpdateTask = Partial<Omit<PostTask, 'uuid'>> & Pick<Task, 'id'>;
-
-export type Params = { todo_uuid: string };
-
-export type PathParam = { params: Params };
-
-export type UpdatePathParam = { params: Partial<Pick<Task, 'id'>> & Params };

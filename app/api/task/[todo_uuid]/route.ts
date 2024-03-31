@@ -7,8 +7,10 @@ import {
   SERVER_ERROR_CODE,
 } from '../../common_error';
 import { createTask, queryTasksByTodoUUID } from '../../db/task';
-import { PathParam, PostTask } from '../../types';
 import { validate } from 'uuid';
+
+import type { PathParam } from '../../../types';
+import type { PostTask } from '../../types';
 
 export async function GET(_: NextRequest, pathParam: PathParam) {
   try {

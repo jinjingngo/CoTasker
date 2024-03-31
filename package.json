@@ -17,14 +17,18 @@
   },
   "dependencies": {
     "@vramework/schemats": "^1.0.8",
+    "lodash": "^4.17.21",
     "next": "14.1.4",
     "pg": "^8.11.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "swr": "^2.2.5",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@testing-library/react": "^14.2.2",
+    "@types/lodash": "^4.17.0",
     "@types/node": "^20",
     "@types/pg": "^8.11.4",
     "@types/react": "^18",
@@ -41,6 +45,7 @@
     "node-mocks-http": "^1.14.1",
     "postcss": "^8.4.21",
     "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.13",
     "tailwindcss": "^3.3.0",
     "typescript": "^5",
     "vitest": "^1.4.0"
