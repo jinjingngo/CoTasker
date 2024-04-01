@@ -11,7 +11,8 @@ import {
   SERVER_ERROR_CODE,
 } from '../../../common_error';
 
-import type { UpdatePathParam, UpdateTask } from '@/app/api/types';
+import { UpdatePathParam } from '@/app/types';
+import type { UpdateTask } from '@/app/api/types';
 
 export async function PATCH(request: NextRequest, pathParam: UpdatePathParam) {
   try {
