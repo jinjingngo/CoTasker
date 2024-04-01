@@ -94,7 +94,6 @@ const TodoPage = () => {
         sortTodoByIdDesc,
       );
       setHasMore(total - unshiftedTodo.length > 0);
-      console.log({ currentTodo, todo, unshiftedTodo });
       return unshiftedTodo;
     });
     setTotal(() => total);
