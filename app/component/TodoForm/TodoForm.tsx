@@ -42,14 +42,15 @@ const TodoForm = ({ todo, close, save }: TodoFormProps) => {
       />
       <div className='flex gap-4'>
         <button
+          type='button'
           className='w-[3.25rem] border-b-[1px] hover:border-[salmon]'
           onClick={cancelHandler}
         >
           Cancel
         </button>
         <button
-          className='w-[3.25rem] border-b-[1px] hover:border-[salmon]'
           type='submit'
+          className='w-[3.25rem] border-b-[1px] hover:border-[salmon]'
         >
           Ok
         </button>
