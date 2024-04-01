@@ -27,7 +27,7 @@ const Todo = ({ todo, deleteTodo, updateTodo }: TodoProps) => {
         return;
       }
       console.log({ result });
-      toast.success('Updated');
+      toast.success('Deleted');
       deleteTodo(todo);
     } catch (error) {
       console.error(error);
