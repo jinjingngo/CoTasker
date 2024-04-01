@@ -21,3 +21,13 @@ export type APIResponseType = {
 export interface MutateTodoResponse extends Todo {
   error?: string;
 }
+
+export interface MutateTaskResponse extends Task {
+  error?: string;
+}
+
+export type SingleTodoQueryResult = Todo | undefined;
+
+export type TasksQueryResult = Task[] | undefined;
+
+export type TaskCreate = Partial<Pick<Task, 'title' | 'status' | 'notes'>>;

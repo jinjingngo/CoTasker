@@ -1,3 +1,7 @@
+import useSWR from 'swr';
+import toast from 'react-hot-toast';
+import userEvent from '@testing-library/user-event';
+
 import {
   describe,
   it,
@@ -7,11 +11,10 @@ import {
   afterEach,
   MockInstance,
 } from 'vitest';
-import { render, screen, act, cleanup } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, cleanup } from '@testing-library/react';
+
 import TodoPage from './page';
-import useSWR from 'swr';
-import toast from 'react-hot-toast';
+import { TODO_API_PATH } from './util';
 
 vi.mock('swr', () => ({
   __esModule: true,
@@ -25,11 +28,13 @@ vi.mock('react-hot-toast', () => ({
   default: {
     error: vi.fn(),
     success: vi.fn(),
+    loading: vi.fn(),
+    dismiss: vi.fn(),
   },
   Toaster: () => <div></div>,
 }));
 
-describe('TodoPage', () => {
+describe('Todo Page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useSWR as unknown as MockInstance).mockReturnValue({
@@ -47,7 +52,7 @@ describe('TodoPage', () => {
     render(<TodoPage />);
     expect(screen.getByText('CoTasker')).toBeDefined();
     expect(useSWR).toHaveBeenCalledWith(
-      `/api/todo?offset=0&limit=5`,
+      `${TODO_API_PATH}?offset=0&limit=5`,
       expect.any(Function),
     );
   });
@@ -74,7 +79,7 @@ describe('TodoPage', () => {
     render(<TodoPage />);
     await userEvent.click(screen.getByText('Load more'));
     expect(useSWR).toHaveBeenCalledWith(
-      `/api/todo?offset=2&limit=5`,
+      `${TODO_API_PATH}?offset=2&limit=5`,
       expect.any(Function),
     );
   });
