@@ -129,6 +129,11 @@ const TaskPage = ({ params }: PathParam) => {
             +
           </button>
         </li>
+        {(!tasks || !tasks.length) && !isCreating && (
+          <li className='flex w-full items-center justify-center border-[1px] px-4 py-2 text-gray-400'>
+            No tasks, click + to create one.
+          </li>
+        )}
         {isCreating && (
           <TaskForm close={terminateCreatingTask} save={createTask} />
         )}
