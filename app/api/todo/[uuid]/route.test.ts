@@ -11,7 +11,7 @@ import {
 } from 'vitest';
 
 import * as todo from '../../db/todo';
-import { DELETE, PATCH } from './route';
+import { DELETE, GET, PATCH } from './route';
 import {
   CLIENT_ERROR,
   CLIENT_ERROR_CODE,
@@ -156,6 +156,43 @@ describe('Todo Route Handlers', () => {
       const data = await res.json();
 
       expect(data).toEqual(HTTP_OK);
+      expect(res.status).toBe(HTTP_OK_CODE.status);
+    });
+  });
+
+  describe('GET /api/todo/:uuid', () => {
+    beforeEach(() => {
+      spy = vi.spyOn(todo, 'queryTodoByUUID');
+    });
+
+    it('should return Client Error because uuid is not valid', async () => {
+      const res = await GET(req!, fakeContext);
+      const body = await res.json();
+
+      expect(body).toEqual(CLIENT_ERROR);
+      expect(res.status).toBe(CLIENT_ERROR_CODE.status);
+    });
+
+    it('should return Server Error because deleteTodo returns `undefined`', async () => {
+      spy!.mockImplementationOnce(() => undefined);
+
+      const req = new NextRequest(url!);
+      const res = await GET(req, context);
+      const data = await res.json();
+
+      expect(data).toEqual(SERVER_ERROR);
+      expect(res.status).toBe(SERVER_ERROR_CODE.status);
+    });
+
+    it('should return Successful', async () => {
+      const expected = { uuid: context.params.uuid };
+      spy!.mockResolvedValue(expected);
+
+      const req = new NextRequest(url!);
+      const res = await GET(req, context);
+      const data = await res.json();
+
+      expect(data).toEqual(expected);
       expect(res.status).toBe(HTTP_OK_CODE.status);
     });
   });

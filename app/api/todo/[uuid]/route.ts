@@ -9,11 +9,13 @@ import {
   SERVER_ERROR_CODE,
 } from '../../common_error';
 import { Todo } from '@/shared/schemas';
-import { deleteTodo, updateTodo } from '../../db/todo';
+import { deleteTodo, queryTodoByUUID, updateTodo } from '../../db/todo';
 
 type DeleteContext = { params: { uuid: string } };
 
 type PatchContext = DeleteContext;
+
+type GetByUUIDContext = DeleteContext;
 
 type PatchBody = Pick<Todo, 'title'>;
 
@@ -71,5 +73,21 @@ export async function DELETE(_: NextRequest, { params }: DeleteContext) {
 
   return NextResponse.json(rowCount ? HTTP_OK : CLIENT_ERROR, {
     status: rowCount ? HTTP_OK_CODE.status : CLIENT_ERROR_CODE.status,
+  });
+}
+
+export async function GET(_: NextRequest, { params }: GetByUUIDContext) {
+  const { uuid } = params;
+  const isValid = validate(uuid);
+  console.log(params);
+
+  if (!isValid) {
+    return NextResponse.json(CLIENT_ERROR, CLIENT_ERROR_CODE);
+  }
+
+  const todo = await queryTodoByUUID(uuid);
+
+  return NextResponse.json(todo || SERVER_ERROR, {
+    status: todo ? HTTP_OK_CODE.status : SERVER_ERROR_CODE.status,
   });
 }

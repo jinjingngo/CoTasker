@@ -10,7 +10,13 @@ import {
 import { Pool } from 'pg';
 
 import * as db from '../client/db';
-import { queryTodos, createTodo, updateTodo, deleteTodo } from './todo';
+import {
+  queryTodos,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+  queryTodoByUUID,
+} from './todo';
 
 describe('DB Todo', () => {
   let spy: MockInstance<[], Pool> | null = null;
@@ -173,6 +179,42 @@ describe('DB Todo', () => {
 
       const tasks = await deleteTodo(uuid);
       expect(tasks).toStrictEqual(expected);
+    });
+  });
+
+  describe('queryTodoByUUID', () => {
+    const uuid = '16dc70fc-4089-47ee-9006-4c91b9547602';
+    it('should return `undefined` because `getDBPool()` throws an error', async () => {
+      spy!.mockImplementationOnce(() => {
+        throw Error();
+      });
+
+      const todo = await queryTodoByUUID(uuid);
+      expect(todo).toBeUndefined();
+    });
+
+    it('should return `undefined` because `query()` throws an error', async () => {
+      spy!.mockImplementationOnce(() => {
+        return {
+          query: () => {
+            throw Error();
+          },
+        } as unknown as Pool;
+      });
+      const todo = await queryTodoByUUID(uuid);
+      expect(todo).toBeUndefined();
+    });
+
+    it('should return expected object', async () => {
+      const expected = { uuid };
+      spy!.mockImplementation(() => {
+        return {
+          query: () => ({ rows: [expected] }),
+        } as unknown as Pool;
+      });
+
+      const todo = await queryTodoByUUID(uuid);
+      expect(todo).toStrictEqual(expected);
     });
   });
 });

@@ -107,3 +107,21 @@ export const deleteTodo = async (uuid: string) => {
   }
   return;
 };
+
+export const queryTodoByUUID = async (uuid: string) => {
+  try {
+    const sql = `SELECT * FROM
+        public.todo
+      WHERE uuid = $1`;
+
+    const pool = getDBPool();
+    const {
+      rows: [todo],
+    } = await pool.query<Todo>(sql, [uuid]);
+
+    return todo;
+  } catch (error) {
+    console.error('[DB > todo > getTodoByUUID] ', error);
+  }
+  return;
+};
