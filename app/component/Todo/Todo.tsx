@@ -16,6 +16,7 @@ type TodoProps = {
 
 const Todo = ({ todo, deleteTodo, updateTodo }: TodoProps) => {
   const [isEditing, setIsEditing] = useState(false);
+
   const deleteHandler = async () => {
     try {
       const response = await fetch(`${TODO_API_PATH}/${todo.uuid}`, {
@@ -69,7 +70,7 @@ const Todo = ({ todo, deleteTodo, updateTodo }: TodoProps) => {
       <Link href={`/task/${todo.uuid}`}>
         <p>{todo.title}</p>
       </Link>
-      <div className='hidden w-24 items-center justify-between group-hover:flex'>
+      <div className='hidden w-24 flex-shrink-0 flex-grow-0 items-center justify-between group-hover:flex'>
         <button onClick={editHandler} className='hover:text-red-700'>
           Edit
         </button>

@@ -79,7 +79,6 @@ export async function DELETE(_: NextRequest, { params }: DeleteContext) {
 export async function GET(_: NextRequest, { params }: GetByUUIDContext) {
   const { uuid } = params;
   const isValid = validate(uuid);
-  console.log(params);
 
   if (!isValid) {
     return NextResponse.json(CLIENT_ERROR, CLIENT_ERROR_CODE);
