@@ -55,7 +55,7 @@ const Todo = ({ todo, deleteTodo, updateTodo }: TodoProps) => {
       }
       if (!result) return;
       updateTodo(result);
-      toast.success('New Todo Created!');
+      toast.success('Updated!');
       terminateEditingTodo();
     } catch (e) {
       console.error(e);
