@@ -1,15 +1,13 @@
 'use client';
 
 import useSWR from 'swr';
-import union from 'lodash/fp/union';
-import sortBy from 'lodash/fp/sortBy';
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 
 import TodoForm from './component/TodoForm';
 import Todo from './component/Todo';
 
-import { TODO_API_PATH, fetcher, replaceItem } from './util';
+import { TODO_API_PATH, fetcher, mergeTodoArrays, replaceItem } from './util';
 import { MutateTodoResponse, TodoQueryResult } from './types';
 
 const PAGE_LIMIT = 5;
@@ -92,9 +90,11 @@ const TodoPage = () => {
     if (!data) return;
     const { todo = [], total = 0 } = data;
     setTodo((currentTodo) => {
-      // TODO: causing duplicated key issue when update todo, investigate the `union` further
-      const unshiftedTodo = union(currentTodo, todo).sort(sortTodoByIdDesc);
+      const unshiftedTodo = mergeTodoArrays(currentTodo, todo).sort(
+        sortTodoByIdDesc,
+      );
       setHasMore(total - unshiftedTodo.length > 0);
+      console.log({ currentTodo, todo, unshiftedTodo });
       return unshiftedTodo;
     });
     setTotal(() => total);
