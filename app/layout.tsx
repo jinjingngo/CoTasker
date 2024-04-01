@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'CoTasker',
-  icons: './favicon.png',
+  icons: '/favicon.png',
   authors: {
     url: 'https://wujinjing.com',
     name: 'Jinjing Wu',
