@@ -1,16 +1,14 @@
-import toast from 'react-hot-toast';
-
 import { FormEvent, MouseEvent, ChangeEvent, useState } from 'react';
 
 import type { Todo } from '@/shared/schemas';
 
-type TodoForm = {
+type TodoFormProps = {
   todo?: Todo;
   close: () => void;
   save: (_: string) => void;
 };
 
-const TodoForm = ({ todo, close, save }: TodoForm) => {
+const TodoForm = ({ todo, close, save }: TodoFormProps) => {
   const [title, setTitle] = useState(todo ? todo.title : '');
 
   const cancelHandler = (event: MouseEvent<HTMLButtonElement>) => {
@@ -20,7 +18,6 @@ const TodoForm = ({ todo, close, save }: TodoForm) => {
 
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Use the state value instead of reading from FormData
     if (!title) return;
     save(title);
   };
