@@ -86,7 +86,7 @@ describe('Todo Component', () => {
     fireEvent.click(screen.getByText('Delete'));
 
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('Updated');
+      expect(toast.success).toHaveBeenCalledWith('Deleted');
     });
     expect(deleteTodo).toHaveBeenCalled();
   });
