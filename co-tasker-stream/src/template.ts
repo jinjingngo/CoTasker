@@ -37,6 +37,7 @@ const template = `
 
     ws.addEventListener("message", ({ data }) => {
       const { count, tz, error } = JSON.parse(data)
+			console.log(JSON.parse(data))
       addNewEvent(data)
       if (error) {
         setErrorMessage(error)
@@ -62,7 +63,7 @@ const template = `
   websocket(url)
 
   document.querySelector("#click").addEventListener("click", () => {
-    ws.send("CLICK")
+    ws.send(JSON.stringify({"command": "CLICK"}))
   })
 
   const updateCount = (count) => {
@@ -79,7 +80,7 @@ const template = `
   const closeConnection = () => ws.close()
 
   document.querySelector("#close").addEventListener("click", closeConnection)
-  document.querySelector("#unknown").addEventListener("click", () => ws.send("HUH"))
+  document.querySelector("#unknown").addEventListener("click", () => ws.send(JSON.stringify({"command": "HUH"})))
 
   const setErrorMessage = message => {
     document.querySelector("#error").innerHTML = message ? message : ""
