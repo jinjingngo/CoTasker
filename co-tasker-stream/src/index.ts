@@ -8,76 +8,29 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+// In order for the workers runtime to find the class that implements
+// our Durable Object namespace, we must export it from the root module.
+export { Streamer } from './Streamer';
+
 import template from './template';
 
-export interface Env {
-	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	// MY_KV_NAMESPACE: KVNamespace;
-	//
-	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-	// MY_DURABLE_OBJECT: DurableObjectNamespace;
-	//
-	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-	// MY_BUCKET: R2Bucket;
-	//
-	// Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
-	// MY_SERVICE: Fetcher;
-	//
-	// Example binding to a Queue. Learn more at https://developers.cloudflare.com/queues/javascript-apis/
-	// MY_QUEUE: Queue;
-}
-
-let count = 0;
-
-async function handleSession(websocket: WebSocket) {
-	websocket.accept();
-	websocket.addEventListener('message', async ({ data }) => {
-		if (data === 'CLICK') {
-			count += 1;
-			websocket.send(JSON.stringify({ count, tz: new Date() }));
-		} else {
-			// An unknown message came into the server. Send back an error message
-			websocket.send(JSON.stringify({ error: 'Unknown message received', tz: new Date() }));
-		}
-	});
-
-	websocket.addEventListener('close', async (evt) => {
-		// Handle when a client closes the WebSocket connection
-		console.log(evt);
-	});
-}
-
-const websocketHandler = async (request: Request) => {
-	const upgradeHeader = request.headers.get('Upgrade');
-	if (upgradeHeader !== 'websocket') {
-		return new Response('Expected websocket', { status: 400 });
-	}
-
-	const [client, server] = Object.values(new WebSocketPair());
-	await handleSession(server);
-
-	return new Response(null, {
-		status: 101,
-		webSocket: client,
-	});
-};
-
-const streamer = {
-	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+const modules = {
+	async fetch(request: Request, env: Env, ctx: ExecutionContext) {
 		try {
 			const url = new URL(request.url);
 			switch (url.pathname) {
 				case '/':
 					return template();
 				case '/ws':
-					return websocketHandler(request);
+					const id = env.Streamer.idFromName('co-tasker-streamer');
+					const stub = env.Streamer.get(id);
+					return stub.fetch(request);
 				default:
 					return new Response('Not found', { status: 404 });
 			}
 		} catch (err) {
-			return new Response(err.toString());
+			return new Response(JSON.stringify({ error: err }));
 		}
 	},
 };
-
-export default streamer;
+export default modules;
