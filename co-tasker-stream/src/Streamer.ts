@@ -1,17 +1,12 @@
 import { CLIENT_ERROR } from '../../shared/common_error';
+import { Task } from '../../shared/schemas';
 import { updateTask } from './api';
-
-import type { Env, StreamPayload } from './types';
-
-type ParseMessageDataResult = {
-  error?: typeof CLIENT_ERROR;
-  payload?: any;
-};
+import type { ParseMessageDataResult, StreamPayload } from '../../shared/types';
+import type { Env } from './types';
 
 export class Streamer {
   private clients = new Set<WebSocket>();
   private env: Env;
-  private todo_uuid: string = '';
 
   constructor(state: DurableObjectState, env: Env) {
     this.env = env;
@@ -21,10 +16,6 @@ export class Streamer {
     if (request.headers.get('Upgrade') !== 'websocket') {
       return new Response('Not a WebSocket request', { status: 400 });
     }
-
-    const { pathname } = new URL(request.url);
-    const [, , todo_uuid] = pathname.split('/');
-    this.todo_uuid = todo_uuid;
 
     const { 0: client, 1: server } = new WebSocketPair();
     this.clients.add(server);
@@ -80,19 +71,25 @@ export class Streamer {
   }
 
   async parseMessageData(data: StreamPayload): Promise<ParseMessageDataResult> {
-    const { cmd, payload } = data;
+    const {
+      cmd,
+      payload: { todo_uuid, task },
+    } = data;
 
     if (!['UPDATING_TASK', 'CREATED_TASK', 'DELETED_TASK'].includes(cmd)) {
       return { error: CLIENT_ERROR };
     }
 
     if (cmd === 'CREATED_TASK' || cmd === 'DELETED_TASK') {
-      return { payload };
+      return { payload: data };
     }
 
     // TODO: send the updates to the REST API
-    const { id, parent_id, title, notes, status } = payload;
+    const { id, todo_id, parent_id, title, notes, status } = task;
     if (id === undefined || id === null) {
+      return { error: CLIENT_ERROR };
+    }
+    if (todo_id === undefined || todo_id === null) {
       return { error: CLIENT_ERROR };
     }
 
@@ -105,9 +102,18 @@ export class Streamer {
       return { error: CLIENT_ERROR };
     }
 
-    const updatedTask = await updateTask(payload, this.todo_uuid, this.env);
+    const updatedTask = await updateTask(task, todo_uuid, this.env);
     const { error } = updatedTask;
     if (error) return { error: CLIENT_ERROR };
-    return { payload: updatedTask };
+    const result = {
+      cmd,
+      payload: {
+        todo_uuid,
+        task: updatedTask as Task,
+      },
+    };
+    return {
+      payload: result,
+    };
   }
 }
