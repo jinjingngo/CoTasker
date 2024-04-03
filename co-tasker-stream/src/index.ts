@@ -1,4 +1,11 @@
+// In order for the workers runtime to find the class that implements
+// our Durable Object namespace, we must export it from the root module.
+export { Streamer } from './Streamer';
+
 import { validate } from 'uuid';
+
+import type { Env } from './types';
+
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
  *
@@ -8,20 +15,16 @@ import { validate } from 'uuid';
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-
-// In order for the workers runtime to find the class that implements
-// our Durable Object namespace, we must export it from the root module.
-export { Streamer } from './Streamer';
-
 const modules = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     try {
       const { pathname } = new URL(request.url);
       const [, , todo_uuid] = pathname.split('/');
-      if (!todo_uuid)
+      if (!todo_uuid) {
         return new Response(JSON.stringify({ error: 'Not found' }), {
           status: 404,
         });
+      }
 
       const isValid = validate(todo_uuid);
       if (!isValid)

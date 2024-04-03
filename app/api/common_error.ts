@@ -1,7 +1,8 @@
+export { CLIENT_ERROR } from '../../shared/common_error';
+
 export const HTTP_OK = { status: 'Successful' };
 export const HTTP_OK_CODE = { status: 200 };
 
-export const CLIENT_ERROR = { error: 'Client Error' };
 export const CLIENT_CLONE_ERROR = {
   error: 'Client Error: `clone()` is illegal in most of countries  .)',
 };

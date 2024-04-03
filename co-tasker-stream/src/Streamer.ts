@@ -1,77 +1,30 @@
-import type {
-  Command,
-  CreatedTaskStreamPayload,
-  DeletedTaskStreamPayload,
-  OperationFunction,
-  UpdatingTaskStreamPayload,
-} from '../../shared/types';
+import { CLIENT_ERROR } from '../../shared/common_error';
+import { updateTask } from './api';
 
-/**
- * Sending the updates to the REST API then broadcasting the updated task
- * 	if got any error abandon the broadcast
- * @param {UpdatingTaskStreamPayload} payload
- * @param {WebSocket[]} clients
- */
-const updatingTaskOperation = (
-  payload: UpdatingTaskStreamPayload,
-  clients: WebSocket[],
-) => {
-  // TODO: send the updates to the REST API
-  console.log('[Broadcast > updatingTaskOperation] message: ', payload);
-  clients.forEach((client) => {
-    client.send(JSON.stringify(payload));
-  });
-};
+import type { Env, StreamPayload } from './types';
 
-/**
- * Broadcast the created task
- * @param {CreatedTaskStreamPayload} payload
- * @param {WebSocket[]} clients
- */
-const createdTaskOperation = (
-  payload: CreatedTaskStreamPayload,
-  clients: WebSocket[],
-) => {
-  console.log('[Broadcast > createdTaskOperation] message: ', payload);
-  clients.forEach((client) => {
-    client.send(JSON.stringify(payload));
-  });
-};
-
-/**
- * Broadcast the deleted task
- * @param {DeletedTaskStreamPayload} payload
- * @param {WebSocket[]} clients
- */
-const deletedTaskOperation = (
-  payload: DeletedTaskStreamPayload,
-  clients: WebSocket[],
-) => {
-  console.log('[Broadcast > deletedTaskOperation] message: ', payload, clients);
-  clients.forEach((client) => {
-    client.send(JSON.stringify(payload));
-  });
-};
-
-const operations: Record<Command, OperationFunction> = {
-  CREATED_TASK: createdTaskOperation,
-  UPDATING_TASK: updatingTaskOperation,
-  DELETED_TASK: deletedTaskOperation,
+type ParseMessageDataResult = {
+  error?: typeof CLIENT_ERROR;
+  payload?: any;
 };
 
 export class Streamer {
   private clients = new Set<WebSocket>();
+  private env: Env;
+  private todo_uuid: string = '';
 
   constructor(state: DurableObjectState, env: Env) {
-    // TODO: maybe we can have sockets hibernation here
-    console.log({ state, env });
+    this.env = env;
   }
 
   async fetch(request: Request) {
-    const url = new URL(request.url);
     if (request.headers.get('Upgrade') !== 'websocket') {
       return new Response('Not a WebSocket request', { status: 400 });
     }
+
+    const { pathname } = new URL(request.url);
+    const [, , todo_uuid] = pathname.split('/');
+    this.todo_uuid = todo_uuid;
 
     const { 0: client, 1: server } = new WebSocketPair();
     this.clients.add(server);
@@ -95,7 +48,7 @@ export class Streamer {
    * @param message
    * @param server
    */
-  broadcast(message: MessageEvent, server: WebSocket) {
+  async broadcast(message: MessageEvent, server: WebSocket) {
     try {
       const { data } = message;
       console.log('[Broadcast] receiving message: ', data);
@@ -103,18 +56,58 @@ export class Streamer {
       // only proceed JSON string message
       if (typeof data !== 'string') return;
 
-      const parsedData = JSON.parse(data);
+      const request = JSON.parse(data) as StreamPayload;
 
-      const { cmd, payload } = parsedData;
-      const operation = operations[cmd as Command];
-      // invalid command
-      if (!operation) return;
       const clients = [...this.clients].filter(
         (client) => client !== server && client.readyState === WebSocket.OPEN,
       );
-      operation(payload, clients);
+
+      const { error, payload } = await this.parseMessageData(request);
+
+      if (error) {
+        console.log('[Broadcast] no broadcasting cause an error: ', error);
+        server.send(JSON.stringify(error));
+        return;
+      }
+
+      console.log('[Broadcast] broadcasting message: ', payload);
+      clients.forEach((client) => {
+        client.send(JSON.stringify(payload));
+      });
     } catch (error) {
-      console.error(error);
+      console.error('[Broadcast] catch an error: ', error);
     }
+  }
+
+  async parseMessageData(data: StreamPayload): Promise<ParseMessageDataResult> {
+    const { cmd, payload } = data;
+
+    if (!['UPDATING_TASK', 'CREATED_TASK', 'DELETED_TASK'].includes(cmd)) {
+      return { error: CLIENT_ERROR };
+    }
+
+    if (cmd === 'CREATED_TASK' || cmd === 'DELETED_TASK') {
+      return { payload };
+    }
+
+    // TODO: send the updates to the REST API
+    const { id, parent_id, title, notes, status } = payload;
+    if (id === undefined || id === null) {
+      return { error: CLIENT_ERROR };
+    }
+
+    if (
+      (parent_id === undefined || parent_id === null) &&
+      !title &&
+      !notes &&
+      !status
+    ) {
+      return { error: CLIENT_ERROR };
+    }
+
+    const updatedTask = await updateTask(payload, this.todo_uuid, this.env);
+    const { error } = updatedTask;
+    if (error) return { error: CLIENT_ERROR };
+    return { payload: updatedTask };
   }
 }
