@@ -7,12 +7,17 @@ export const updateTask = async (
   todo_uuid: string,
   env: Env,
 ) => {
-  const url = `${env.API_URL}/api/task/${todo_uuid}/${task.id}`;
-  const response = await fetch(url, {
-    method: 'PATCH',
-    body: JSON.stringify(task),
-  });
+  try {
+    const url = `${env.API_URL}/api/task/${todo_uuid}/${task.id}`;
+    const response = await fetch(url, {
+      method: 'PATCH',
+      body: JSON.stringify(task),
+    });
 
-  const updatedTask = (await response.json()) as MutateTaskResponse;
-  return updatedTask;
+    const updatedTask = (await response.json()) as MutateTaskResponse;
+    return updatedTask;
+  } catch (error) {
+    console.log(error);
+    return { error };
+  }
 };

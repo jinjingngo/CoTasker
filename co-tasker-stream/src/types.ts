@@ -5,13 +5,6 @@ export interface Env {
   API_URL: string;
 }
 
-export type Command = 'CREATED_TASK' | 'UPDATING_TASK' | 'DELETED_TASK';
-
-export type StreamPayload = {
-  cmd: Command;
-  payload: Partial<Task>;
-};
-
 export type API_ERROR = {
   error: string;
 };
