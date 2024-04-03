@@ -89,11 +89,11 @@ const template = `
 `;
 
 const response = () => {
-	return new Response(template, {
-		headers: {
-			'Content-type': 'text/html; charset=utf-8',
-		},
-	});
+  return new Response(template, {
+    headers: {
+      'Content-type': 'text/html; charset=utf-8',
+    },
+  });
 };
 
 export default response;
