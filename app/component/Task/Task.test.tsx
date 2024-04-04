@@ -60,6 +60,7 @@ describe('Task Component', () => {
 
   const deleteTask = vi.fn();
   const updateTask = vi.fn();
+  const broadcast = vi.fn();
 
   beforeEach(() => {
     global.fetch = vi.fn();
@@ -77,6 +78,7 @@ describe('Task Component', () => {
         todo={mockTodo}
         deleteTask={deleteTask}
         updateTask={updateTask}
+        broadcast={broadcast}
       />,
     );
     expect(screen.getByText(mockTask.title)).toBeDefined();
@@ -89,6 +91,7 @@ describe('Task Component', () => {
         todo={mockTodo}
         deleteTask={deleteTask}
         updateTask={updateTask}
+        broadcast={broadcast}
       />,
     );
     fireEvent.click(screen.getByText('Edit'));
@@ -106,6 +109,7 @@ describe('Task Component', () => {
         todo={mockTodo}
         deleteTask={deleteTask}
         updateTask={updateTask}
+        broadcast={broadcast}
       />,
     );
 
