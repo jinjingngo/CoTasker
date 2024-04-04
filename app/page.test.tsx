@@ -59,7 +59,7 @@ describe('Todo Page', () => {
 
   it('should allows creating a new todo', async () => {
     render(<TodoPage />);
-    await userEvent.click(screen.getByText('+'));
+    await userEvent.click(screen.getByText('+ Add Todo'));
     expect(screen.getByPlaceholderText('Type new Todo here')).toBeDefined();
   });
 

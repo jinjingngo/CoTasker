@@ -121,11 +121,11 @@ const TodoPage = () => {
         <li className='flex w-full items-center justify-center rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
           <h1>CoTasker</h1>
           <button
-            className='absolute right-2 disabled:cursor-not-allowed disabled:text-gray-400'
+            className='absolute right-2 text-gray-700 hover:text-[salmon] disabled:cursor-not-allowed disabled:text-gray-400'
             onClick={startCreatingTodo}
             disabled={isCreating}
           >
-            +
+            + Add Todo
           </button>
         </li>
         {isCreating && (
