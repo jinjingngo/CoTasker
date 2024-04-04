@@ -103,7 +103,7 @@ describe('Task Page', () => {
 
   it('allows users to start creating a task', async () => {
     render(<TaskPage {...mockContext} />);
-    await userEvent.click(screen.getByText('+'));
+    await userEvent.click(screen.getByText('+ Add Task'));
     expect(screen.getByPlaceholderText('Type new Task here')).toBeDefined();
   });
 

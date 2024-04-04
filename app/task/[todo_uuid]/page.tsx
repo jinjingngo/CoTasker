@@ -30,6 +30,7 @@ import { Command, StreamPayload } from '@/shared/types';
 
 const TaskPage = ({ params }: PathParam) => {
   const { todo_uuid } = params;
+
   const { data: todo, error: todoError } = useSWR<SingleTodoQueryResult>(
     `${TODO_API_PATH}/${todo_uuid}`,
     fetcher,
@@ -41,7 +42,9 @@ const TaskPage = ({ params }: PathParam) => {
     isLoading,
   } = useSWR<TasksQueryResult>(`${TASK_API_PATH}/${todo_uuid}`, fetcher);
 
+  const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [showInProgress, setShowInProgress] = useState(false);
 
   useEffect(() => {
     if (!taskList) return;
@@ -68,8 +71,6 @@ const TaskPage = ({ params }: PathParam) => {
     toast.dismiss();
   }, [isLoading]);
 
-  const [isCreating, setIsCreating] = useState(false);
-
   const url = `${process.env.NEXT_PUBLIC_WS_URL}/ws/${todo_uuid}`;
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(url, {
     onOpen: () => console.log('opened'),
@@ -82,11 +83,11 @@ const TaskPage = ({ params }: PathParam) => {
   });
 
   const startCreatingTask = () => {
-    if (isCreating) return;
-    setIsCreating(true);
+    if (isCreatingTask) return;
+    setIsCreatingTask(true);
   };
 
-  const terminateCreatingTask = () => setIsCreating(false);
+  const terminateCreatingTask = () => setIsCreatingTask(false);
 
   const createTask = async (task: TaskCreate) => {
     if (!todo?.uuid) return;
@@ -171,37 +172,59 @@ const TaskPage = ({ params }: PathParam) => {
     <main className='flex min-h-screen flex-col items-center p-12 md:px-24'>
       <Toaster position='top-center' reverseOrder={false} />
       <ul className='relative flex w-full list-none flex-col gap-1 md:w-[85%] lg:w-[70%] xl:w-[50%]'>
-        <li className='flex w-full items-center justify-center rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
-          {todo ? <h1>{todo.title}</h1> : <></>}
+        <li className='grid w-full grid-cols-2 grid-rows-2 place-items-center gap-1 rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
+          <h1 className='col-span-2 underline decoration-[salmon]'>
+            {todo ? todo.title : <>Default title</>}
+          </h1>
+          <label className='flex select-none place-items-center justify-center gap-1 place-self-start text-gray-700'>
+            <input
+              className='grid h-5 w-5 appearance-none place-content-center rounded border-[1px] border-gray-400 bg-transparent before:h-3 before:w-3 before:scale-0 before:rounded before:bg-[salmon] before:content-[""] checked:before:scale-100'
+              type='checkbox'
+              name='show_in_progress'
+              id='show_in_progress'
+              checked={showInProgress}
+              onChange={() => setShowInProgress(!showInProgress)}
+            />
+            <p>Only show in progress tasks</p>
+          </label>
           <button
-            className='absolute right-2 disabled:cursor-not-allowed disabled:text-gray-400'
+            className='place-self-end text-gray-700 hover:text-[salmon] disabled:cursor-not-allowed disabled:text-gray-400'
             onClick={startCreatingTask}
-            disabled={isCreating}
+            disabled={isCreatingTask}
           >
-            +
+            + Add Task
           </button>
         </li>
-        {(!tasks || !tasks.length) && !isCreating && (
+        {(!tasks || !tasks.length) && !isCreatingTask && (
           <li className='flex w-full items-center justify-center border-[1px] px-4 py-2 text-gray-400'>
             No tasks, click + to create one.
           </li>
         )}
-        {isCreating && (
+        {isCreatingTask && (
           <TaskForm close={terminateCreatingTask} save={createTask} />
         )}
         {todo &&
           tasks &&
           tasks.length > 0 &&
-          tasks.map((task) => (
-            <Task
-              key={task.id}
-              task={task}
-              todo={todo}
-              broadcast={sendTaskToStreamer}
-              deleteTask={deleteTask}
-              updateTask={updateTask}
-            />
-          ))}
+          tasks
+            .filter((task) => !showInProgress || task.status === 'IN_PROGRESS')
+            .map((task) => (
+              <Task
+                key={task.id}
+                task={task}
+                todo={todo}
+                broadcast={sendTaskToStreamer}
+                deleteTask={deleteTask}
+                updateTask={updateTask}
+              />
+            ))}
+        {!tasks.filter(({ status }) => status === 'IN_PROGRESS').length &&
+          showInProgress &&
+          !isCreatingTask && (
+            <li className='flex w-full items-center justify-center border-[1px] border-solid border-[salmon] px-4 py-2 text-gray-400'>
+              {"Congrats! You've finished all the tasks!"}
+            </li>
+          )}
         {tasks && tasks.length > 0 && (
           <li className='flex w-full items-center justify-between rounded-b-lg border-[1px] border-solid border-[salmon] px-4  py-2'>
             {`Count: ${tasks.filter(({ status }) => status === 'DONE').length} / ${tasks.length}`}
