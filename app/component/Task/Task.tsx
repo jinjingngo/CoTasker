@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { TASK_API_PATH } from '../../util';
 
-import type { Task, Todo } from '@/shared/schemas';
+import type { Status, Task, Todo } from '@/shared/schemas';
 import type {
   APIResponseType,
   MutateTaskResponse,
@@ -21,19 +21,31 @@ type TaskProps = {
 };
 
 const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
+  const [currentTask, setCurrentTask] = useState<Task>(task);
+
   const [isEditing, setIsEditing] = useState(false);
+  const [isDone, setIsDone] = useState(() => currentTask.status === 'DONE');
+
+  useEffect(() => {
+    if (!task) return;
+    setCurrentTask(task);
+    setIsDone(task.status === 'DONE');
+  }, [task]);
 
   const deleteHandler = async () => {
     try {
-      const response = await fetch(`${TASK_API_PATH}/${todo.uuid}/${task.id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `${TASK_API_PATH}/${todo.uuid}/${currentTask.id}`,
+        {
+          method: 'DELETE',
+        },
+      );
       const result = (await response.json()) as APIResponseType;
       if (result.error) {
         toast.error(result.error);
         return;
       }
-      broadcast(task, 'DELETED_TASK');
+      broadcast(currentTask, 'DELETED_TASK');
       toast.success('Deleted');
       deleteTask(task);
     } catch (error) {
@@ -50,10 +62,13 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
 
   const saveTask = async (updatedTask: TaskCreate) => {
     try {
-      const response = await fetch(`${TASK_API_PATH}/${todo.uuid}/${task.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(updatedTask),
-      });
+      const response = await fetch(
+        `${TASK_API_PATH}/${todo.uuid}/${currentTask.id}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify(updatedTask),
+        },
+      );
       const result = (await response.json()) as MutateTaskResponse;
       const { error } = result;
       if (error) {
@@ -64,7 +79,7 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
       broadcast(result, 'UPDATING_TASK');
       toast.success('Updated!');
       updateTask(result);
-      terminateEditingTask();
+      isEditing && terminateEditingTask();
     } catch (e) {
       console.error(e);
       toast.error('Some error happens!');
@@ -75,20 +90,38 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
     broadcast({ ...task, title, notes }, 'UPDATING_TASK');
   };
 
+  const setIsDoneHandler = () => {
+    const status: Status = !isDone ? 'DONE' : 'IN_PROGRESS';
+    setIsDone((isDone) => !isDone);
+    saveTask({ ...currentTask, status });
+  };
+
   return isEditing ? (
     <TaskForm
-      task={task}
+      task={currentTask}
       close={terminateEditingTask}
       save={saveTask}
       change={changeHandler}
     />
   ) : (
-    <li className='group flex w-full items-center justify-between border-[1px] border-solid border-[salmon] px-4 py-2'>
-      <div className='w-full group-hover:pr-1'>
-        <p>{task.title}</p>
-        {task.notes && (
-          <p className='border-t-[1px] border-[salmon] text-gray-700'>
-            {task.notes}
+    <li className='group flex w-full items-center justify-start gap-2 border-[1px] border-solid border-[salmon] px-4 py-2'>
+      <input
+        className='grid h-5 w-5 appearance-none place-content-center rounded border-[1px] border-gray-400 bg-transparent before:h-3 before:w-3 before:scale-0 before:rounded before:bg-[salmon] before:content-[""] checked:before:scale-100'
+        type='checkbox'
+        name='done'
+        id='done'
+        checked={isDone}
+        onChange={setIsDoneHandler}
+      />
+      <div className='flex-1 group-hover:pr-1'>
+        <p className={isDone ? 'line-through decoration-solid' : ''}>
+          {currentTask.title}
+        </p>
+        {currentTask.notes && (
+          <p
+            className={`border-t-[1px] border-[salmon] text-gray-700 ${isDone ? 'line-through decoration-solid' : ''}`}
+          >
+            {currentTask.notes}
           </p>
         )}
       </div>

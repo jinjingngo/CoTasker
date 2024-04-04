@@ -31,10 +31,10 @@ describe('TaskForm Component', () => {
     expect(mockSave).toHaveBeenCalledWith(expected);
   });
 
-  it('should calls the close function when the cancel button is clicked', async () => {
+  it('should calls the close function when the Close button is clicked', async () => {
     render(<TaskForm close={mockClose} save={mockSave} />);
 
-    await userEvent.click(screen.getByText('Cancel'));
+    await userEvent.click(screen.getByText('Close'));
 
     expect(mockClose).toHaveBeenCalled();
   });
