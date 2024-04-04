@@ -109,7 +109,6 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
         className='grid h-5 w-5 appearance-none place-content-center rounded border-[1px] border-gray-400 bg-transparent before:h-3 before:w-3 before:scale-0 before:rounded before:bg-[salmon] before:content-[""] checked:before:scale-100'
         type='checkbox'
         name='done'
-        id='done'
         checked={isDone}
         onChange={setIsDoneHandler}
       />
