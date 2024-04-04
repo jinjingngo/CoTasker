@@ -2,7 +2,8 @@
 
 import useSWR from 'swr';
 import toast, { Toaster } from 'react-hot-toast';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 import {
   TASK_API_PATH,
@@ -25,6 +26,7 @@ import type {
 } from '@/app/types';
 
 import type { Task as TaskType } from '@/shared/schemas';
+import { Command, StreamPayload } from '@/shared/types';
 
 const TaskPage = ({ params }: PathParam) => {
   const { todo_uuid } = params;
@@ -68,6 +70,17 @@ const TaskPage = ({ params }: PathParam) => {
 
   const [isCreating, setIsCreating] = useState(false);
 
+  const url = `${process.env.NEXT_PUBLIC_WS_URL}/ws/${todo_uuid}`;
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(url, {
+    onOpen: () => console.log('opened'),
+    //Will attempt to reconnect on all close events, such as server shutting down
+    shouldReconnect: (closeEvent) => {
+      console.log(closeEvent);
+      return true;
+    },
+    reconnectAttempts: 10,
+  });
+
   const startCreatingTask = () => {
     if (isCreating) return;
     setIsCreating(true);
@@ -89,14 +102,31 @@ const TaskPage = ({ params }: PathParam) => {
         return;
       }
       if (!result) return;
+
       setTasks((tasks) => [result, ...tasks]);
       toast.success('New Task Created!');
+      sendTaskToStreamer(result, 'CREATED_TASK');
       terminateCreatingTask();
     } catch (e) {
       console.error(e);
       toast.error('Some error happens!');
     }
   };
+
+  const sendTaskToStreamer = useCallback(
+    (task: TaskType, cmd: Command) => {
+      if (readyState !== ReadyState.OPEN) return;
+      const streamPayload: StreamPayload = {
+        cmd,
+        payload: {
+          todo_uuid,
+          task,
+        },
+      };
+      sendJsonMessage(streamPayload);
+    },
+    [readyState, sendJsonMessage, todo_uuid],
+  );
 
   /**
    * eject a task, and decrease the number locally
@@ -114,6 +144,28 @@ const TaskPage = ({ params }: PathParam) => {
   const updateTask = (task: TaskType) => {
     setTasks((currentTask) => replaceItem<Task>(currentTask, task, 'id'));
   };
+
+  useEffect(() => {
+    if (!lastJsonMessage) return;
+    const { cmd, payload } = lastJsonMessage as StreamPayload;
+    const { task } = payload;
+    if (!task) return;
+    if (cmd === 'CREATED_TASK') {
+      setTasks((tasks) => [task as TaskType, ...tasks]);
+      return;
+    }
+
+    if (cmd === 'DELETED_TASK') {
+      deleteTask(task as TaskType);
+      return;
+    }
+
+    if (cmd === 'UPDATING_TASK') {
+      updateTask(task as TaskType);
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastJsonMessage]);
 
   return (
     <main className='flex min-h-screen flex-col items-center justify-between p-24'>
@@ -145,6 +197,7 @@ const TaskPage = ({ params }: PathParam) => {
               key={task.id}
               task={task}
               todo={todo}
+              broadcast={sendTaskToStreamer}
               deleteTask={deleteTask}
               updateTask={updateTask}
             />

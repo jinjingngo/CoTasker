@@ -49,10 +49,6 @@ export class Streamer {
 
       const request = JSON.parse(data) as StreamPayload;
 
-      const clients = [...this.clients].filter(
-        (client) => client !== server && client.readyState === WebSocket.OPEN,
-      );
-
       const { error, payload } = await this.parseMessageData(request);
 
       if (error) {
@@ -62,6 +58,11 @@ export class Streamer {
       }
 
       console.log('[Broadcast] broadcasting message: ', payload);
+
+      const clients = [...this.clients].filter(
+        (client) => client !== server && client.readyState === WebSocket.OPEN,
+      );
+
       clients.forEach((client) => {
         client.send(JSON.stringify(payload));
       });

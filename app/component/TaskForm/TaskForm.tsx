@@ -1,4 +1,4 @@
-import { FormEvent, MouseEvent, ChangeEvent, useState } from 'react';
+import { FormEvent, MouseEvent, ChangeEvent, useState, useEffect } from 'react';
 
 import type { Task } from '@/shared/schemas';
 import type { TaskCreate } from '@/app/types';
@@ -7,13 +7,20 @@ type TaskFormProps = {
   task?: Task;
   close: () => void;
   save: (_: TaskCreate) => void;
+  change?: (_: Task) => void;
 };
 
-const TaskForm = ({ task, close, save }: TaskFormProps) => {
+const TaskForm = ({ task, close, save, change }: TaskFormProps) => {
   const [currentTask, setCurrentTask] = useState({
     title: task?.title || '',
     notes: task?.notes || '',
   });
+
+  useEffect(() => {
+    if (!task) return;
+    const { title, notes = '' } = task;
+    setCurrentTask({ title, notes: notes as string });
+  }, [task]);
 
   const cancelHandler = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -29,10 +36,14 @@ const TaskForm = ({ task, close, save }: TaskFormProps) => {
   const changeHandler =
     (key: 'title' | 'notes') =>
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setCurrentTask((currentTask) => ({
-        ...currentTask,
-        [key]: event.target.value,
-      }));
+      setCurrentTask((currentTask) => {
+        const task = {
+          ...currentTask,
+          [key]: event.target.value,
+        };
+        change?.(task as Task);
+        return task;
+      });
     };
 
   return (
@@ -64,7 +75,7 @@ const TaskForm = ({ task, close, save }: TaskFormProps) => {
           className='w-[3.25rem] border-b-[1px] hover:border-[salmon]'
           onClick={cancelHandler}
         >
-          Cancel
+          Close
         </button>
         <button
           type='submit'

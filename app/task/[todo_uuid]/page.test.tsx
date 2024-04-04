@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from '@testing-library/react';
+import { ReadyState } from 'react-use-websocket';
 import {
   MockInstance,
   afterEach,
@@ -31,6 +32,35 @@ vi.mock('react-hot-toast', () => ({
   },
   Toaster: () => <div></div>,
 }));
+
+interface ReadyStateType {
+  UNINSTANTIATED: -1;
+  CONNECTING: 0;
+  OPEN: 1;
+  CLOSING: 2;
+  CLOSED: 3;
+}
+
+interface ReactUseWebSocketModule {
+  ReadyState: ReadyStateType;
+}
+
+vi.mock('react-use-websocket', async () => {
+  const actualModule = (await vi.importActual(
+    'react-use-websocket',
+  )) as ReactUseWebSocketModule;
+  return {
+    __esModule: true,
+    default: vi.fn(() => ({
+      sendJsonMessage: vi.fn(),
+      lastJsonMessage: null,
+      readyState: actualModule.ReadyState.OPEN,
+    })),
+    ReadyState: {
+      ...actualModule.ReadyState,
+    },
+  };
+});
 
 const mockContext: PathParam = {
   params: { todo_uuid: 'fake_uuid' },
