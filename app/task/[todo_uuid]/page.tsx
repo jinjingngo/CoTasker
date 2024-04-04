@@ -168,9 +168,9 @@ const TaskPage = ({ params }: PathParam) => {
   }, [lastJsonMessage]);
 
   return (
-    <main className='flex min-h-screen flex-col items-center justify-between p-24'>
+    <main className='flex min-h-screen flex-col items-center p-12 md:px-24'>
       <Toaster position='top-center' reverseOrder={false} />
-      <ul className='relative flex w-1/3 list-none flex-col gap-1'>
+      <ul className='relative flex w-full list-none flex-col gap-1 md:w-[85%] lg:w-[70%] xl:w-[50%]'>
         <li className='flex w-full items-center justify-center rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
           {todo ? <h1>{todo.title}</h1> : <></>}
           <button
