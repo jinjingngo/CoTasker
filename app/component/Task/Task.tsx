@@ -10,15 +10,17 @@ import type {
 } from '@/app/types';
 import toast from 'react-hot-toast';
 import TaskForm from '../TaskForm';
+import { Command } from '@/shared/types';
 
 type TaskProps = {
   task: Task;
   todo: Todo;
   deleteTask: (task: Task) => void;
   updateTask: (task: Task) => void;
+  broadcast: (task: Task, cmd: Command) => void;
 };
 
-const Task = ({ task, todo, deleteTask, updateTask }: TaskProps) => {
+const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const deleteHandler = async () => {
@@ -31,6 +33,7 @@ const Task = ({ task, todo, deleteTask, updateTask }: TaskProps) => {
         toast.error(result.error);
         return;
       }
+      broadcast(task, 'DELETED_TASK');
       toast.success('Deleted');
       deleteTask(task);
     } catch (error) {
@@ -58,8 +61,9 @@ const Task = ({ task, todo, deleteTask, updateTask }: TaskProps) => {
         return;
       }
       if (!result) return;
-      updateTask(result);
+      broadcast(result, 'UPDATING_TASK');
       toast.success('Updated!');
+      updateTask(result);
       terminateEditingTask();
     } catch (e) {
       console.error(e);
@@ -67,8 +71,17 @@ const Task = ({ task, todo, deleteTask, updateTask }: TaskProps) => {
     }
   };
 
+  const changeHandler = ({ title, notes }: Task) => {
+    broadcast({ ...task, title, notes }, 'UPDATING_TASK');
+  };
+
   return isEditing ? (
-    <TaskForm task={task} close={terminateEditingTask} save={saveTask} />
+    <TaskForm
+      task={task}
+      close={terminateEditingTask}
+      save={saveTask}
+      change={changeHandler}
+    />
   ) : (
     <li className='group flex w-full items-center justify-between border-[1px] border-solid border-[salmon] px-4 py-2'>
       <div className='w-full group-hover:pr-1'>
