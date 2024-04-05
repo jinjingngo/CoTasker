@@ -26,7 +26,7 @@ describe('TodoCounter', () => {
   afterEach(cleanup);
 
   vi.mock('../../hook/useTodo', () => ({
-    default: () => mockHook,
+    useTodo: () => mockHook,
   }));
 
   it('displays the correct todo count', () => {

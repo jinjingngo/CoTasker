@@ -20,26 +20,24 @@ import {
   AddButton,
   useStatusFilter,
   CoToaster,
+  Footer,
 } from '../../component';
 
 import type {
   MutateTaskResponse,
   PathParam,
-  SingleTodoQueryResult,
   TaskCreate,
   TasksQueryResult,
 } from '@/app/types';
 
 import type { Task as TaskType } from '@/shared/schemas';
 import type { Command, StreamPayload } from '@/shared/types';
+import { useSingleTodo } from '../../hook/useTodo';
 
 const TaskPage = ({ params }: PathParam) => {
   const { todo_uuid } = params;
 
-  const { data: todo, error: todoError } = useSWR<SingleTodoQueryResult>(
-    `${TODO_API_PATH}/${todo_uuid}`,
-    fetcher,
-  );
+  const { todo, error: todoError } = useSingleTodo(todo_uuid);
 
   const {
     data: taskList,
@@ -222,9 +220,9 @@ const TaskPage = ({ params }: PathParam) => {
             </li>
           )}
         {tasks && tasks.length > 0 && (
-          <li className='flex w-full items-center justify-between rounded-b-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
+          <Footer>
             {`Count: ${tasks.filter(({ status }) => status === 'DONE').length} / ${tasks.length}`}
-          </li>
+          </Footer>
         )}
       </ul>
     </main>
