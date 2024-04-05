@@ -170,7 +170,8 @@ const TaskPage = ({ params }: PathParam) => {
                 updateTask={updateTask}
               />
             ))}
-        {!tasks.filter(({ status }) => status === 'IN_PROGRESS').length &&
+        {tasks.length > 0 &&
+          !tasks.filter(({ status }) => status === 'IN_PROGRESS').length &&
           isEqual(filteringStatus, ['IN_PROGRESS']) &&
           !isCreatingTask && (
             <li className='flex w-full items-center justify-center border-[1px] border-solid border-[salmon] px-4 py-2 text-gray-400'>
