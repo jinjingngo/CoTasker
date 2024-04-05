@@ -15,7 +15,6 @@ const FilterOptions: FilterOption[] = [
 
 const useStatusFilter = () => {
   const [filteringStatus, setFilteringStatus] = useState<Status[]>([
-    'DONE',
     'IN_PROGRESS',
   ]);
 
