@@ -2,7 +2,6 @@
 
 import useSWR from 'swr';
 import isEqual from 'lodash/fp/isEqual';
-import toast, { Toaster } from 'react-hot-toast';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -15,9 +14,13 @@ import {
   sortByIdDesc,
 } from '../../util';
 
-import TaskForm from '../../component/TaskForm';
-import Task from '../../component/Task';
-import { AddButton, useStatusFilter } from '../../component';
+import {
+  TaskForm,
+  Task,
+  AddButton,
+  useStatusFilter,
+  CoToaster,
+} from '../../component';
 
 import type {
   MutateTaskResponse,
@@ -62,15 +65,15 @@ const TaskPage = ({ params }: PathParam) => {
 
   useEffect(() => {
     if (!todoError && !tasksError) return;
-    toast.error(todoError || tasksError);
+    CoToaster.error(todoError || tasksError);
   }, [todoError, tasksError]);
 
   useEffect(() => {
     if (isLoading) {
-      toast.loading('Loading...', { id: 'loading' });
+      CoToaster.loading('Loading...');
       return;
     }
-    toast.dismiss();
+    CoToaster.dismiss();
   }, [isLoading]);
 
   const url = `${process.env.NEXT_PUBLIC_WS_URL}/ws/${todo_uuid}`;
@@ -94,6 +97,7 @@ const TaskPage = ({ params }: PathParam) => {
   const createTask = async (task: TaskCreate) => {
     if (!todo?.uuid) return;
     try {
+      CoToaster.loading('Creating...');
       const response = await fetch(`${TASK_API_PATH}/${todo.uuid}`, {
         method: 'POST',
         body: JSON.stringify({ ...task, status: 'IN_PROGRESS' }),
@@ -101,18 +105,18 @@ const TaskPage = ({ params }: PathParam) => {
       const result = (await response.json()) as MutateTaskResponse;
       const { error } = result;
       if (error) {
-        toast.error(error);
+        CoToaster.error(error);
         return;
       }
       if (!result) return;
 
       setTasks((tasks) => [result, ...tasks]);
-      toast.success('New Task Created!');
+      CoToaster.success('New Task Created!');
       sendTaskToStreamer(result, 'CREATED_TASK');
       terminateCreatingTask();
     } catch (e) {
       console.error(e);
-      toast.error('Some error happens!');
+      CoToaster.error('Some error happens!');
     }
   };
 
@@ -172,7 +176,7 @@ const TaskPage = ({ params }: PathParam) => {
 
   return (
     <main className='flex min-h-screen flex-col items-center p-12 md:px-24'>
-      <Toaster position='top-center' reverseOrder={false} />
+      <CoToaster.Toaster position='top-center' reverseOrder={false} />
       <ul className='relative flex w-full list-none flex-col gap-1 md:w-[85%] lg:w-[70%] xl:w-[50%]'>
         <li className='grid w-full grid-cols-2 grid-rows-[1fr_1.5rem] place-items-center gap-1 rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
           <h1 className='col-span-2 text-center underline decoration-[salmon]'>

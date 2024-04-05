@@ -1,11 +1,10 @@
 'use client';
 
 import useSWR from 'swr';
-import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 
 import TodoForm from './component/TodoForm';
-import { Todo, AddButton } from './component';
+import { Todo, AddButton, CoToaster } from './component';
 
 import { TODO_API_PATH, fetcher, mergeArrays, replaceItem } from './util';
 
@@ -56,17 +55,17 @@ const TodoPage = () => {
       const result = (await response.json()) as MutateTodoResponse;
       const { error } = result;
       if (error) {
-        toast.error(error);
+        CoToaster.error(error);
         return;
       }
       if (!result) return;
       setTodo((currentTodo) => [result, ...currentTodo]);
       setTotal((currentTotal) => currentTotal + 1);
-      toast.success('New Todo Created!');
+      CoToaster.success('New Todo Created!');
       terminateCreatingTodo();
     } catch (e) {
       console.error(e);
-      toast.error('Some error happens!');
+      CoToaster.error('Some error happens!');
     }
   };
 
@@ -103,20 +102,20 @@ const TodoPage = () => {
 
   useEffect(() => {
     if (!error) return;
-    toast.error(error);
+    CoToaster.error(error);
   }, [error]);
 
   useEffect(() => {
     if (isLoading) {
-      toast.loading('Loading...', { id: 'loading' });
+      CoToaster.loading('Loading...');
       return;
     }
-    toast.dismiss();
+    CoToaster.dismiss();
   }, [isLoading]);
 
   return (
     <main className='flex min-h-screen flex-col items-center p-12 md:px-24'>
-      <Toaster position='top-center' reverseOrder={false} />
+      <CoToaster.Toaster position='top-center' reverseOrder={false} />
       <ul className='relative flex w-full list-none flex-col gap-1 md:w-[85%] lg:w-[70%] xl:w-[50%]'>
         <li className='flex w-full items-center justify-center rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
           <h1>CoTasker</h1>
