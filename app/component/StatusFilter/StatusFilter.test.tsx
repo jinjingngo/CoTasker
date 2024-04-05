@@ -3,17 +3,10 @@ import {
   render,
   fireEvent,
   screen,
-  cleanup,
   renderHook,
   waitFor,
 } from '@testing-library/react';
 import useStatusFilter from './StatusFilter';
-import { afterEach, beforeEach } from 'node:test';
-
-const FilterComponent = () => {
-  const { Filter } = useStatusFilter();
-  return <Filter />;
-};
 
 describe('useStatusFilter', () => {
   const { result } = renderHook(() => useStatusFilter());

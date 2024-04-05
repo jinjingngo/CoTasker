@@ -17,7 +17,7 @@ import {
 
 import TaskForm from '../../component/TaskForm';
 import Task from '../../component/Task';
-import useStatusFilter from '../../component/Filter';
+import useStatusFilter from '../../component/StatusFilter';
 
 import type {
   MutateTaskResponse,
@@ -174,13 +174,13 @@ const TaskPage = ({ params }: PathParam) => {
     <main className='flex min-h-screen flex-col items-center p-12 md:px-24'>
       <Toaster position='top-center' reverseOrder={false} />
       <ul className='relative flex w-full list-none flex-col gap-1 md:w-[85%] lg:w-[70%] xl:w-[50%]'>
-        <li className='grid w-full grid-cols-2 grid-rows-2 place-items-center gap-1 rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
-          <h1 className='col-span-2 underline decoration-[salmon]'>
+        <li className='grid w-full grid-cols-2 grid-rows-[1fr_1.5rem] place-items-center gap-1 rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
+          <h1 className='col-span-2 text-center underline decoration-[salmon]'>
             {todo ? todo.title : <>Default title</>}
           </h1>
           <Filter />
           <button
-            className='place-self-end text-gray-700 hover:text-[salmon] disabled:cursor-not-allowed disabled:text-gray-400'
+            className='self-center justify-self-end text-gray-700 hover:text-[salmon] disabled:cursor-not-allowed disabled:text-gray-400'
             onClick={startCreatingTask}
             disabled={isCreatingTask}
           >
