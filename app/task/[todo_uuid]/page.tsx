@@ -17,7 +17,7 @@ import {
 
 import TaskForm from '../../component/TaskForm';
 import Task from '../../component/Task';
-import useStatusFilter from '../../component/StatusFilter';
+import { AddButton, useStatusFilter } from '../../component';
 
 import type {
   MutateTaskResponse,
@@ -45,7 +45,7 @@ const TaskPage = ({ params }: PathParam) => {
   } = useSWR<TasksQueryResult>(`${TASK_API_PATH}/${todo_uuid}`, fetcher);
 
   const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<TaskType[]>([]);
   const { filteringStatus, Filter } = useStatusFilter();
 
   useEffect(() => {
@@ -145,7 +145,7 @@ const TaskPage = ({ params }: PathParam) => {
    * @param {TaskType} todo
    */
   const updateTask = (task: TaskType) => {
-    setTasks((currentTask) => replaceItem<Task>(currentTask, task, 'id'));
+    setTasks((currentTask) => replaceItem<TaskType>(currentTask, task, 'id'));
   };
 
   useEffect(() => {
@@ -179,13 +179,13 @@ const TaskPage = ({ params }: PathParam) => {
             {todo ? todo.title : <>Default title</>}
           </h1>
           <Filter />
-          <button
-            className='self-center justify-self-end text-gray-700 hover:text-[salmon] disabled:cursor-not-allowed disabled:text-gray-400'
+          <AddButton
+            className='self-center justify-self-end '
             onClick={startCreatingTask}
             disabled={isCreatingTask}
           >
             + Add Task
-          </button>
+          </AddButton>
         </li>
         {(!tasks || !tasks.length) && !isCreatingTask && (
           <li className='flex w-full items-center justify-center border-[1px] px-4 py-2 text-gray-400'>

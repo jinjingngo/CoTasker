@@ -3,15 +3,15 @@ import toast from 'react-hot-toast';
 
 import { TODO_API_PATH } from '../../util';
 
-import type { Todo } from '@/shared/schemas';
+import type { Todo as TodoType } from '@/shared/schemas';
 import type { APIResponseType, MutateTodoResponse } from '@/app/types';
 import { useState } from 'react';
 import TodoForm from '../TodoForm';
 
 type TodoProps = {
-  todo: Todo;
-  deleteTodo: (todo: Todo) => void;
-  updateTodo: (todo: Todo) => void;
+  todo: TodoType;
+  deleteTodo: (todo: TodoType) => void;
+  updateTodo: (todo: TodoType) => void;
 };
 
 const Todo = ({ todo, deleteTodo, updateTodo }: TodoProps) => {

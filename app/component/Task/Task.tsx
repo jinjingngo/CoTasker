@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { TASK_API_PATH } from '../../util';
 
-import type { Status, Task, Todo } from '@/shared/schemas';
+import type { Status, Task as TaskType, Todo } from '@/shared/schemas';
 import type {
   APIResponseType,
   MutateTaskResponse,
@@ -13,15 +13,15 @@ import TaskForm from '../TaskForm';
 import { Command } from '@/shared/types';
 
 type TaskProps = {
-  task: Task;
+  task: TaskType;
   todo: Todo;
-  deleteTask: (task: Task) => void;
-  updateTask: (task: Task) => void;
-  broadcast: (task: Task, cmd: Command) => void;
+  deleteTask: (task: TaskType) => void;
+  updateTask: (task: TaskType) => void;
+  broadcast: (task: TaskType, cmd: Command) => void;
 };
 
 const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
-  const [currentTask, setCurrentTask] = useState<Task>(task);
+  const [currentTask, setCurrentTask] = useState<TaskType>(task);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDone, setIsDone] = useState(() => currentTask.status === 'DONE');
@@ -86,7 +86,7 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
     }
   };
 
-  const changeHandler = ({ title, notes }: Task) => {
+  const changeHandler = ({ title, notes }: TaskType) => {
     broadcast({ ...task, title, notes }, 'UPDATING_TASK');
   };
 
