@@ -1,17 +1,13 @@
 'use client';
 
-import useSWR from 'swr';
 import { useEffect, useState } from 'react';
 
-import TodoForm from './component/TodoForm';
-import { Todo, AddButton, CoToaster } from './component';
-
-import { useTodo } from './hook/useTodo';
-
+import useTodo from './hook/useTodo';
+import { Todo, TodoForm, AddButton, CoToaster } from './component';
 import { TODO_API_PATH, replaceItem } from './util';
 
-import type { MutateTodoResponse } from './types';
 import type { Todo as TodoType } from '@/shared/schemas';
+import type { MutateTodoResponse } from './types';
 
 const TodoPage = () => {
   const {
