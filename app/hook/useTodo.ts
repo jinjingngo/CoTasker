@@ -8,7 +8,7 @@ import type { Todo } from '@/shared/schemas';
 
 const PAGE_LIMIT = 5;
 
-export const useTodoData = () => {
+export const useTodo = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -19,10 +19,6 @@ export const useTodoData = () => {
     fetcher,
   );
 
-  /**
-   * load more todos if available
-   * @returns {void}
-   */
   const loadMore = () => {
     if (!hasMore) return;
     setOffset(() => todos.length);
@@ -44,6 +40,7 @@ export const useTodoData = () => {
     setTodo: setTodos,
     total,
     setTotal,
+    hasMore,
     loadMore,
     error,
     isLoading,
