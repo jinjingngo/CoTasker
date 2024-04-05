@@ -1,18 +1,10 @@
 'use client';
 
-import useSWR from 'swr';
 import isEqual from 'lodash/fp/isEqual';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { ReadyState } from 'react-use-websocket';
 import { useCallback, useEffect, useState } from 'react';
 
-import {
-  TASK_API_PATH,
-  TODO_API_PATH,
-  fetcher,
-  mergeArrays,
-  replaceItem,
-  sortByIdDesc,
-} from '../../util';
+import { TASK_API_PATH, replaceItem } from '../../util';
 
 import {
   TaskForm,
@@ -23,43 +15,20 @@ import {
   Footer,
 } from '../../component';
 
-import type {
-  MutateTaskResponse,
-  PathParam,
-  TaskCreate,
-  TasksQueryResult,
-} from '@/app/types';
-
+import type { MutateTaskResponse, PathParam, TaskCreate } from '@/app/types';
 import type { Task as TaskType } from '@/shared/schemas';
 import type { Command, StreamPayload } from '@/shared/types';
-import { useSingleTodo } from '../../hook/useTodo';
+import { useSingleTodo, useTask, useTaskWebSocket } from '../../hook';
 
 const TaskPage = ({ params }: PathParam) => {
   const { todo_uuid } = params;
 
   const { todo, error: todoError } = useSingleTodo(todo_uuid);
-
-  const {
-    data: taskList,
-    error: tasksError,
-    isLoading,
-  } = useSWR<TasksQueryResult>(`${TASK_API_PATH}/${todo_uuid}`, fetcher);
-
+  const { tasks, setTasks, error: tasksError, isLoading } = useTask(todo_uuid);
+  const { sendJsonMessage, lastJsonMessage, readyState } =
+    useTaskWebSocket(todo_uuid);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const [tasks, setTasks] = useState<TaskType[]>([]);
   const { filteringStatus, Filter } = useStatusFilter();
-
-  useEffect(() => {
-    if (!taskList) return;
-    setTasks((currentTasks) => {
-      const unshiftedTasks = mergeArrays(currentTasks, taskList).sort(
-        sortByIdDesc,
-      );
-      return unshiftedTasks;
-    });
-    // No need to `tasks` dependency
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskList]);
 
   useEffect(() => {
     if (!todoError && !tasksError) return;
@@ -73,17 +42,6 @@ const TaskPage = ({ params }: PathParam) => {
     }
     CoToaster.dismiss();
   }, [isLoading]);
-
-  const url = `${process.env.NEXT_PUBLIC_WS_URL}/ws/${todo_uuid}`;
-  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(url, {
-    onOpen: () => console.log('opened'),
-    //Will attempt to reconnect on all close events, such as server shutting down
-    shouldReconnect: (closeEvent) => {
-      console.log(closeEvent);
-      return true;
-    },
-    reconnectAttempts: 10,
-  });
 
   const startCreatingTask = () => {
     if (isCreatingTask) return;
