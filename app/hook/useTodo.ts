@@ -8,7 +8,7 @@ import type { Todo } from '@/shared/schemas';
 
 const PAGE_LIMIT = 5;
 
-export const useTodo = () => {
+const useTodo = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -46,3 +46,5 @@ export const useTodo = () => {
     isLoading,
   };
 };
+
+export default useTodo;
