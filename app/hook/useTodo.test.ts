@@ -9,7 +9,7 @@ import {
   beforeEach,
   afterEach,
 } from 'vitest';
-import { renderHook, waitFor, cleanup } from '@testing-library/react';
+import { renderHook, cleanup } from '@testing-library/react';
 
 import { useTodo, useSingleTodo } from './useTodo';
 

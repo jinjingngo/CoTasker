@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useTodo } from '../../hook/useTodo';
+import { useTodo } from '../../hook';
 
 type FooterProp = {
   children: ReactNode;

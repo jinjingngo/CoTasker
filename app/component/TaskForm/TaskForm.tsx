@@ -66,7 +66,7 @@ const TaskForm = ({ task, close, save, change }: TaskFormProps) => {
         name='notes'
         id='notes'
         rows={1}
-        value={currentTask.notes}
+        value={currentTask.notes || ''}
         onChange={changeHandler('notes')}
       ></textarea>
       <div className='flex gap-4'>
