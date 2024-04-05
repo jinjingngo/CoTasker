@@ -9,7 +9,7 @@ import {
   beforeEach,
   afterEach,
 } from 'vitest';
-import { renderHook, act, waitFor, cleanup } from '@testing-library/react';
+import { renderHook, waitFor, cleanup } from '@testing-library/react';
 
 import useTodo from './useTodo';
 
@@ -17,15 +17,6 @@ vi.mock('swr', () => ({
   __esModule: true,
   default: vi.fn(),
 }));
-
-// vi.mock('../util', () => ({
-//   fetcher: vi.fn,
-//   mergeArrays: (currentTodos: any[], newTodos: any[]) => [
-//     ...currentTodos,
-//     ...newTodos,
-//   ],
-//   sortByIdDesc: (todos: any[]) => todos.sort((a, b) => b.id - a.id),
-// }));
 
 describe('useTodo hook', () => {
   beforeEach(() => {
@@ -87,9 +78,7 @@ describe('useTodo hook', () => {
     const { result } = renderHook(() => useTodo());
 
     await waitFor(() => {
-      act(() => {
-        result.current.loadMore();
-      });
+      result.current.loadMore();
 
       expect(result.current.todos).toHaveLength(2);
       expect(result.current.hasMore).toBe(true);
