@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import { TodoProvider } from './provider';
 import useTodo from './hook/useTodo';
+import { TodoProvider } from './provider';
 import { Todo, TodoForm, AddButton, CoToaster, TodoCounter } from './component';
 
 import { TODO_API_PATH, replaceItem } from './util';
