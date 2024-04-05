@@ -6,29 +6,26 @@ import { useEffect, useState } from 'react';
 import TodoForm from './component/TodoForm';
 import { Todo, AddButton, CoToaster } from './component';
 
-import { TODO_API_PATH, fetcher, mergeArrays, replaceItem } from './util';
+import { useTodo } from './hook/useTodo';
 
-import type { MutateTodoResponse, TodoQueryResult } from './types';
+import { TODO_API_PATH, replaceItem } from './util';
+
+import type { MutateTodoResponse } from './types';
 import type { Todo as TodoType } from '@/shared/schemas';
 
-const PAGE_LIMIT = 5;
-
-const sortTodoByIdDesc = (a: TodoType, z: TodoType) => z.id - a.id;
-
 const TodoPage = () => {
-  const [todo, setTodo] = useState<TodoType[]>([]);
-  const [total, setTotal] = useState(0);
-
-  // `hasMore` indicate if we can load more
-  const [hasMore, setHasMore] = useState(false);
-  const [offset, setOffset] = useState(0);
+  const {
+    todo,
+    setTodo,
+    total,
+    setTotal,
+    hasMore,
+    loadMore,
+    error,
+    isLoading,
+  } = useTodo();
 
   const [isCreating, setIsCreating] = useState(false);
-
-  const { data, error, isLoading } = useSWR<TodoQueryResult>(
-    `${TODO_API_PATH}?offset=${offset}&limit=${PAGE_LIMIT}`,
-    fetcher,
-  );
 
   const startCreatingTodo = () => {
     if (isCreating) return;
@@ -36,15 +33,6 @@ const TodoPage = () => {
   };
 
   const terminateCreatingTodo = () => setIsCreating(false);
-
-  /**
-   * load more todos if available
-   * @returns {void}
-   */
-  const loadMore = () => {
-    if (!hasMore) return;
-    setOffset(() => todo.length);
-  };
 
   const createTodo = async (title: string) => {
     try {
@@ -86,19 +74,6 @@ const TodoPage = () => {
   const updateTodo = (todo: TodoType) => {
     setTodo((currentTodo) => replaceItem<TodoType>(currentTodo, todo, 'id'));
   };
-
-  useEffect(() => {
-    if (!data) return;
-    const { todo = [], total = 0 } = data;
-    setTodo((currentTodo) => {
-      const unshiftedTodo = mergeArrays(currentTodo, todo).sort(
-        sortTodoByIdDesc,
-      );
-      setHasMore(total - unshiftedTodo.length > 0);
-      return unshiftedTodo;
-    });
-    setTotal(() => total);
-  }, [data]);
 
   useEffect(() => {
     if (!error) return;
