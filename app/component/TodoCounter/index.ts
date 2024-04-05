@@ -1,3 +1,1 @@
-import TodoCounter from './TodoCounter';
-
-export default TodoCounter;
+export * from './TodoCounter';

@@ -1,9 +1,22 @@
+import { ReactNode } from 'react';
 import useTodo from '../../hook/useTodo';
 
-const TodoCounter = () => {
+type FooterProp = {
+  children: ReactNode;
+};
+
+export const Footer = ({ children }: FooterProp) => {
+  return (
+    <li className='flex w-full items-center justify-between rounded-b-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
+      {children}
+    </li>
+  );
+};
+
+export const TodoCounter = () => {
   const { todos, total, hasMore, loadMore, isLoading } = useTodo();
   return (
-    <li className='flex w-full items-center justify-between rounded-b-lg border-[1px] border-solid border-[salmon] px-4  py-2'>
+    <Footer>
       <div>
         {todos.length} / {total}
       </div>
@@ -14,8 +27,6 @@ const TodoCounter = () => {
       >
         Load more
       </button>
-    </li>
+    </Footer>
   );
 };
-
-export default TodoCounter;

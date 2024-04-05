@@ -222,7 +222,7 @@ const TaskPage = ({ params }: PathParam) => {
             </li>
           )}
         {tasks && tasks.length > 0 && (
-          <li className='flex w-full items-center justify-between rounded-b-lg border-[1px] border-solid border-[salmon] px-4  py-2'>
+          <li className='flex w-full items-center justify-between rounded-b-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
             {`Count: ${tasks.filter(({ status }) => status === 'DONE').length} / ${tasks.length}`}
           </li>
         )}
