@@ -2,24 +2,17 @@
 
 import { useEffect, useState } from 'react';
 
+import { TodoProvider } from './provider';
 import useTodo from './hook/useTodo';
-import { Todo, TodoForm, AddButton, CoToaster } from './component';
+import { Todo, TodoForm, AddButton, CoToaster, TodoCounter } from './component';
+
 import { TODO_API_PATH, replaceItem } from './util';
 
 import type { Todo as TodoType } from '@/shared/schemas';
 import type { MutateTodoResponse } from './types';
 
 const TodoPage = () => {
-  const {
-    todos,
-    setTodos,
-    total,
-    setTotal,
-    hasMore,
-    loadMore,
-    error,
-    isLoading,
-  } = useTodo();
+  const { todos, setTodos, setTotal, error, isLoading } = useTodo();
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -110,23 +103,18 @@ const TodoPage = () => {
               updateTodo={updateTodo}
             />
           ))}
-        {todos.length > 0 && (
-          <li className='flex w-full items-center justify-between rounded-b-lg border-[1px] border-solid border-[salmon] px-4  py-2'>
-            <div>
-              {todos.length} / {total}
-            </div>
-            <button
-              className='disabled:cursor-not-allowed disabled:text-gray-400'
-              disabled={isLoading || !hasMore}
-              onClick={loadMore}
-            >
-              Load more
-            </button>
-          </li>
-        )}
+        {todos.length > 0 && <TodoCounter />}
       </ul>
     </main>
   );
 };
 
-export default TodoPage;
+const Page = () => {
+  return (
+    <TodoProvider>
+      <TodoPage />
+    </TodoProvider>
+  );
+};
+
+export default Page;
