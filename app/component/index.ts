@@ -1,15 +1,8 @@
 import Todo from './Todo';
+import TodoForm from './TodoForm';
 import Task from './Task';
 import NewTodo from './TodoForm';
-import StatusFilter from './StatusFilter';
-import FormButton from './FormButton';
+import AddButton from './AddButton';
+import useStatusFilter from './StatusFilter';
 
-const modules = {
-  Todo,
-  Task,
-  NewTodo,
-  StatusFilter,
-  FormButton,
-};
-
-export default modules;
+export { Todo, TodoForm, Task, NewTodo, useStatusFilter, AddButton };

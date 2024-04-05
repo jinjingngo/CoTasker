@@ -3,16 +3,16 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 
-import FormButton from './FormButton';
+import AddButton from './AddButton';
 
-describe('FormButton', () => {
+describe('AddButton', () => {
   afterEach(cleanup);
 
   it('renders children correctly', () => {
     render(
-      <FormButton onClick={() => {}} disabled={false}>
+      <AddButton onClick={() => {}} disabled={false}>
         Click me!
-      </FormButton>,
+      </AddButton>,
     );
     const button = screen.getByRole('button', { name: 'Click me!' });
     expect(button).toBeDefined();
@@ -21,9 +21,9 @@ describe('FormButton', () => {
   it('handles click events', async () => {
     const handleClick = vi.fn();
     render(
-      <FormButton onClick={handleClick} disabled={false}>
+      <AddButton onClick={handleClick} disabled={false}>
         Click me!
-      </FormButton>,
+      </AddButton>,
     );
     const button = screen.getByRole('button', { name: 'Click me!' });
     await userEvent.click(button);
@@ -32,9 +32,9 @@ describe('FormButton', () => {
 
   it('is disabled when the disabled prop is true', () => {
     render(
-      <FormButton onClick={() => {}} disabled={true}>
+      <AddButton onClick={() => {}} disabled={true}>
         Cannot click
-      </FormButton>,
+      </AddButton>,
     );
     const button = screen.getByRole('button', {
       name: 'Cannot click',
@@ -44,9 +44,9 @@ describe('FormButton', () => {
 
   it('has specific classes when disabled', () => {
     render(
-      <FormButton onClick={() => {}} disabled={true}>
+      <AddButton onClick={() => {}} disabled={true}>
         Cannot click
-      </FormButton>,
+      </AddButton>,
     );
     const button = screen.getByRole('button', { name: 'Cannot click' });
     const classList = Array.from(button.classList);

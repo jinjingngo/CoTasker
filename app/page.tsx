@@ -5,7 +5,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 
 import TodoForm from './component/TodoForm';
-import Todo from './component/Todo';
+import { Todo, AddButton } from './component';
 
 import { TODO_API_PATH, fetcher, mergeArrays, replaceItem } from './util';
 
@@ -85,7 +85,7 @@ const TodoPage = () => {
    * @param {TodoType} todo
    */
   const updateTodo = (todo: TodoType) => {
-    setTodo((currentTodo) => replaceItem<Todo>(currentTodo, todo, 'id'));
+    setTodo((currentTodo) => replaceItem<TodoType>(currentTodo, todo, 'id'));
   };
 
   useEffect(() => {
@@ -120,13 +120,13 @@ const TodoPage = () => {
       <ul className='relative flex w-full list-none flex-col gap-1 md:w-[85%] lg:w-[70%] xl:w-[50%]'>
         <li className='flex w-full items-center justify-center rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
           <h1>CoTasker</h1>
-          <button
-            className='absolute right-2 text-gray-700 hover:text-[salmon] disabled:cursor-not-allowed disabled:text-gray-400'
+          <AddButton
+            className='absolute right-2'
             onClick={startCreatingTodo}
             disabled={isCreating}
           >
             + Add Todo
-          </button>
+          </AddButton>
         </li>
         {isCreating && (
           <TodoForm close={terminateCreatingTodo} save={createTodo} />
