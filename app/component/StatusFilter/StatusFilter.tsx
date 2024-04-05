@@ -20,7 +20,7 @@ const useStatusFilter = () => {
   ]);
 
   const Filter = () => (
-    <label className='flex gap-1 place-self-start text-gray-700'>
+    <label className='flex gap-1 self-center justify-self-start text-gray-700'>
       <p>Status: </p>
       <select
         className='bg-transparent text-gray-700'
