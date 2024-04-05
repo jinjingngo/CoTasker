@@ -1,9 +1,10 @@
 'use client';
 
 import useSWR from 'swr';
+import isEqual from 'lodash/fp/isEqual';
 import toast, { Toaster } from 'react-hot-toast';
-import { useCallback, useEffect, useState } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   TASK_API_PATH,
@@ -16,6 +17,7 @@ import {
 
 import TaskForm from '../../component/TaskForm';
 import Task from '../../component/Task';
+import useStatusFilter from '../../component/Filter';
 
 import type {
   MutateTaskResponse,
@@ -26,7 +28,7 @@ import type {
 } from '@/app/types';
 
 import type { Task as TaskType } from '@/shared/schemas';
-import { Command, StreamPayload } from '@/shared/types';
+import type { Command, StreamPayload } from '@/shared/types';
 
 const TaskPage = ({ params }: PathParam) => {
   const { todo_uuid } = params;
@@ -44,7 +46,7 @@ const TaskPage = ({ params }: PathParam) => {
 
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [showInProgress, setShowInProgress] = useState(false);
+  const { filteringStatus, Filter } = useStatusFilter();
 
   useEffect(() => {
     if (!taskList) return;
@@ -176,17 +178,7 @@ const TaskPage = ({ params }: PathParam) => {
           <h1 className='col-span-2 underline decoration-[salmon]'>
             {todo ? todo.title : <>Default title</>}
           </h1>
-          <label className='flex select-none place-items-center justify-center gap-1 place-self-start text-gray-700'>
-            <input
-              className='grid h-5 w-5 appearance-none place-content-center rounded border-[1px] border-gray-400 bg-transparent before:h-3 before:w-3 before:scale-0 before:rounded before:bg-[salmon] before:content-[""] checked:before:scale-100'
-              type='checkbox'
-              name='show_in_progress'
-              id='show_in_progress'
-              checked={showInProgress}
-              onChange={() => setShowInProgress(!showInProgress)}
-            />
-            <p>Only show in progress tasks</p>
-          </label>
+          <Filter />
           <button
             className='place-self-end text-gray-700 hover:text-[salmon] disabled:cursor-not-allowed disabled:text-gray-400'
             onClick={startCreatingTask}
@@ -207,7 +199,7 @@ const TaskPage = ({ params }: PathParam) => {
           tasks &&
           tasks.length > 0 &&
           tasks
-            .filter((task) => !showInProgress || task.status === 'IN_PROGRESS')
+            .filter((task) => filteringStatus.includes(task.status))
             .map((task) => (
               <Task
                 key={task.id}
@@ -219,7 +211,7 @@ const TaskPage = ({ params }: PathParam) => {
               />
             ))}
         {!tasks.filter(({ status }) => status === 'IN_PROGRESS').length &&
-          showInProgress &&
+          isEqual(filteringStatus, ['IN_PROGRESS']) &&
           !isCreatingTask && (
             <li className='flex w-full items-center justify-center border-[1px] border-solid border-[salmon] px-4 py-2 text-gray-400'>
               {"Congrats! You've finished all the tasks!"}
