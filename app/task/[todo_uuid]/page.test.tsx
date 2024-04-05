@@ -1,5 +1,8 @@
+import useSWR from 'swr';
+import toast from 'react-hot-toast';
+
+import userEvent from '@testing-library/user-event';
 import { cleanup, render, screen } from '@testing-library/react';
-import { ReadyState } from 'react-use-websocket';
 import {
   MockInstance,
   afterEach,
@@ -10,13 +13,11 @@ import {
   expect,
 } from 'vitest';
 
-import useSWR from 'swr';
-
 import TaskPage from './page';
-import { PathParam } from '@/app/types';
-import userEvent from '@testing-library/user-event';
+import { CoToaster } from '../../component';
 import { TASK_API_PATH } from '../../util';
-import toast from 'react-hot-toast';
+
+import type { PathParam } from '@/app/types';
 
 vi.mock('swr', () => ({
   __esModule: true,
@@ -114,6 +115,9 @@ describe('Task Page', () => {
       isLoading: false,
     });
     render(<TaskPage {...mockContext} />);
-    expect(toast.error).toHaveBeenCalledWith('Fetch error');
+    expect(toast.error).toHaveBeenCalledWith(
+      'Fetch error',
+      CoToaster.CoToastOption,
+    );
   });
 });

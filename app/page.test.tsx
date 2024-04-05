@@ -15,6 +15,7 @@ import { render, screen, cleanup } from '@testing-library/react';
 
 import TodoPage from './page';
 import { TODO_API_PATH } from './util';
+import { CoToaster } from './component';
 
 vi.mock('swr', () => ({
   __esModule: true,
@@ -91,6 +92,9 @@ describe('Todo Page', () => {
       isLoading: false,
     });
     render(<TodoPage />);
-    expect(toast.error).toHaveBeenCalledWith('Fetch error');
+    expect(toast.error).toHaveBeenCalledWith(
+      'Fetch error',
+      CoToaster.CoToastOption,
+    );
   });
 });
