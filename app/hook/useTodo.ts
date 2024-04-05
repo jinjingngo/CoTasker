@@ -36,8 +36,8 @@ export const useTodo = () => {
   }, [data]);
 
   return {
-    todo: todos,
-    setTodo: setTodos,
+    todos,
+    setTodos,
     total,
     setTotal,
     hasMore,

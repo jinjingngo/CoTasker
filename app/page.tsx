@@ -15,8 +15,8 @@ import type { Todo as TodoType } from '@/shared/schemas';
 
 const TodoPage = () => {
   const {
-    todo,
-    setTodo,
+    todos,
+    setTodos,
     total,
     setTotal,
     hasMore,
@@ -47,7 +47,7 @@ const TodoPage = () => {
         return;
       }
       if (!result) return;
-      setTodo((currentTodo) => [result, ...currentTodo]);
+      setTodos((currentTodo) => [result, ...currentTodo]);
       setTotal((currentTotal) => currentTotal + 1);
       CoToaster.success('New Todo Created!');
       terminateCreatingTodo();
@@ -63,7 +63,7 @@ const TodoPage = () => {
    * @returns {void}
    */
   const deleteTodo = (todo: TodoType) => {
-    setTodo((currentTodo) => currentTodo.filter(({ id }) => todo.id !== id));
+    setTodos((currentTodo) => currentTodo.filter(({ id }) => todo.id !== id));
     setTotal((currentTotal) => currentTotal - 1);
   };
 
@@ -72,7 +72,7 @@ const TodoPage = () => {
    * @param {TodoType} todo
    */
   const updateTodo = (todo: TodoType) => {
-    setTodo((currentTodo) => replaceItem<TodoType>(currentTodo, todo, 'id'));
+    setTodos((currentTodo) => replaceItem<TodoType>(currentTodo, todo, 'id'));
   };
 
   useEffect(() => {
@@ -105,8 +105,8 @@ const TodoPage = () => {
         {isCreating && (
           <TodoForm close={terminateCreatingTodo} save={createTodo} />
         )}
-        {todo.length > 0 &&
-          todo.map((todo) => (
+        {todos.length > 0 &&
+          todos.map((todo) => (
             <Todo
               key={todo.id}
               todo={todo}
@@ -114,10 +114,10 @@ const TodoPage = () => {
               updateTodo={updateTodo}
             />
           ))}
-        {todo.length > 0 && (
+        {todos.length > 0 && (
           <li className='flex w-full items-center justify-between rounded-b-lg border-[1px] border-solid border-[salmon] px-4  py-2'>
             <div>
-              {todo.length} / {total}
+              {todos.length} / {total}
             </div>
             <button
               className='disabled:cursor-not-allowed disabled:text-gray-400'
