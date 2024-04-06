@@ -31,3 +31,7 @@ export type SingleTodoQueryResult = Todo | undefined;
 export type TasksQueryResult = Task[] | undefined;
 
 export type TaskCreate = Partial<Pick<Task, 'title' | 'status' | 'notes'>>;
+
+export type TaskTree = Task & {
+  children: TaskTree[];
+};

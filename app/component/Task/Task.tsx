@@ -132,6 +132,7 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
           Delete
         </button>
       </div>
+      <ul></ul>
     </li>
   );
 };

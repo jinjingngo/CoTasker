@@ -43,3 +43,10 @@ export const mergeArrays = <T extends { id: number; updated_date: Date }>(
 
 export const sortByIdDesc = <T extends { id: number }>(a: T, z: T) =>
   z.id - a.id;
+
+export const sortByUpdatedDateDesc = <
+  T extends { updated_date: string | Date },
+>(
+  a: T,
+  z: T,
+) => new Date(z.updated_date).getTime() - new Date(a.updated_date).getTime();
