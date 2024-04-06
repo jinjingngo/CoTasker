@@ -5,12 +5,19 @@ import type { TaskCreate } from '@/app/types';
 
 type TaskFormProps = {
   task?: Task;
+  parentTaskID?: number;
   close: () => void;
   save: (_: TaskCreate) => void;
   change?: (_: Task) => void;
 };
 
-const TaskForm = ({ task, close, save, change }: TaskFormProps) => {
+const TaskForm = ({
+  task,
+  parentTaskID,
+  close,
+  save,
+  change,
+}: TaskFormProps) => {
   const [currentTask, setCurrentTask] = useState({
     title: task?.title || '',
     notes: task?.notes || '',
@@ -30,7 +37,10 @@ const TaskForm = ({ task, close, save, change }: TaskFormProps) => {
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!currentTask.title) return;
-    save(currentTask);
+    save({
+      ...currentTask,
+      ...(parentTaskID ? { parent_id: parentTaskID } : undefined),
+    });
   };
 
   const changeHandler =
@@ -54,7 +64,7 @@ const TaskForm = ({ task, close, save, change }: TaskFormProps) => {
       <input
         className='w-full border-b-[1px] border-[salmon] bg-transparent outline-none'
         type='text'
-        placeholder='Type new Task here'
+        placeholder={`Type new ${parentTaskID === undefined || parentTaskID === null ? '' : 'Sub '}Task here`}
         name='title'
         id='title'
         value={currentTask.title}

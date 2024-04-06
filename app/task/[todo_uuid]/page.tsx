@@ -24,11 +24,23 @@ const TaskPage = ({ params }: PathParam) => {
   const { todo_uuid } = params;
 
   const { todo, error: todoError } = useSingleTodo(todo_uuid);
-  const { tasks, setTasks, error: tasksError, isLoading } = useTask(todo_uuid);
+  const {
+    tasks,
+    setTasks,
+    roots,
+    addTaskToTaskTree,
+    updateTaskInTaskTree,
+    deleteTaskFromTaskTree,
+    error: tasksError,
+    isLoading,
+  } = useTask(todo_uuid);
   const { sendJsonMessage, lastJsonMessage, readyState } =
     useTaskWebSocket(todo_uuid);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const { filteringStatus, Filter } = useStatusFilter();
+  const [parentTaskID, setParentTaskID] = useState<number | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     if (!todoError && !tasksError) return;
@@ -43,12 +55,18 @@ const TaskPage = ({ params }: PathParam) => {
     CoToaster.dismiss();
   }, [isLoading]);
 
-  const startCreatingTask = () => {
+  const startCreatingTask = (parentID?: number) => {
+    if (parentID !== undefined && parentID !== null) {
+      setParentTaskID(parentID);
+    }
     if (isCreatingTask) return;
     setIsCreatingTask(true);
   };
 
-  const terminateCreatingTask = () => setIsCreatingTask(false);
+  const terminateCreatingTask = () => {
+    setIsCreatingTask(false);
+    setParentTaskID(undefined);
+  };
 
   const createTask = async (task: TaskCreate) => {
     if (!todo?.uuid) return;
@@ -67,6 +85,7 @@ const TaskPage = ({ params }: PathParam) => {
       if (!result) return;
 
       setTasks((tasks) => [result, ...tasks]);
+      addTaskToTaskTree(result);
       CoToaster.success('New Task Created!');
       sendTaskToStreamer(result, 'CREATED_TASK');
       terminateCreatingTask();
@@ -98,6 +117,7 @@ const TaskPage = ({ params }: PathParam) => {
    */
   const deleteTask = (task: TaskType) => {
     setTasks((currentTasks) => currentTasks.filter(({ id }) => task.id !== id));
+    deleteTaskFromTaskTree(task);
   };
 
   /**
@@ -106,6 +126,7 @@ const TaskPage = ({ params }: PathParam) => {
    */
   const updateTask = (task: TaskType) => {
     setTasks((currentTask) => replaceItem<TaskType>(currentTask, task, 'id'));
+    updateTaskInTaskTree(task);
   };
 
   useEffect(() => {
@@ -141,7 +162,7 @@ const TaskPage = ({ params }: PathParam) => {
           <Filter />
           <AddButton
             className='self-center justify-self-end '
-            onClick={startCreatingTask}
+            onClick={() => startCreatingTask()}
             disabled={isCreatingTask}
           >
             + Add Task
@@ -153,12 +174,16 @@ const TaskPage = ({ params }: PathParam) => {
           </li>
         )}
         {isCreatingTask && (
-          <TaskForm close={terminateCreatingTask} save={createTask} />
+          <TaskForm
+            close={terminateCreatingTask}
+            save={createTask}
+            {...(parentTaskID ? { parentTaskID } : undefined)}
+          />
         )}
         {todo &&
-          tasks &&
-          tasks.length > 0 &&
-          tasks
+          roots &&
+          roots.length > 0 &&
+          roots
             .filter((task) => filteringStatus.includes(task.status))
             .map((task) => (
               <Task
@@ -168,6 +193,7 @@ const TaskPage = ({ params }: PathParam) => {
                 broadcast={sendTaskToStreamer}
                 deleteTask={deleteTask}
                 updateTask={updateTask}
+                addSubTask={startCreatingTask}
               />
             ))}
         {tasks.length > 0 &&

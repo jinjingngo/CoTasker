@@ -40,6 +40,8 @@ const updateOrAddNode = (taskMap: Record<number, TaskTree>, task: Task) => {
 export const getTaskTree = (tasks?: Task[]): TaskTree[] => {
   if (!tasks) return roots;
 
+  console.log('getTaskTree: ', { tasks });
+
   const taskMap: Record<number, TaskTree> = {};
   tasks.forEach((task) => updateOrAddNode(taskMap, task));
 
@@ -69,7 +71,8 @@ const getExcludedTasks = (excludedId?: number): Task[] => {
 };
 
 export const addTask = (task: Task): void => {
-  getTaskTree([...getExcludedTasks(task.id), task]);
+  const roots = getTaskTree([...getExcludedTasks(task.id), task]);
+  console.log('addTask: ', { roots });
 };
 
 export const updateTask = addTask;
