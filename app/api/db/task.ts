@@ -51,10 +51,9 @@ export const createTask = async (task: PostTask) => {
       fields.push(`parent_id`);
       params.push(parent_id);
     }
-    if (notes) {
-      fields.push(`notes`);
-      params.push(notes.trim());
-    }
+
+    fields.push(`notes`);
+    params.push((notes || '').trim());
 
     const sql = `
       INSERT INTO
@@ -98,10 +97,8 @@ export const updateTask = async (task: UpdateTask) => {
       fields.push(`parent_id=$${fields.length + 1}`);
       params.push(parent_id);
     }
-    if (notes) {
-      fields.push(`notes=$${fields.length + 1}`);
-      params.push(notes.trim());
-    }
+    fields.push(`notes=$${fields.length + 1}`);
+    params.push((notes || '').trim());
 
     const sql = `
       UPDATE
