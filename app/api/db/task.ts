@@ -41,14 +41,19 @@ export const createTask = async (task: PostTask) => {
       `created_date`,
       `updated_date`,
     ];
-    const params: (string | number)[] = [title, status, 'now()', 'now()'];
+    const params: (string | number)[] = [
+      title.trim(),
+      status,
+      'now()',
+      'now()',
+    ];
     if (parent_id !== undefined && parent_id !== null) {
       fields.push(`parent_id`);
       params.push(parent_id);
     }
     if (notes) {
       fields.push(`notes`);
-      params.push(notes);
+      params.push(notes.trim());
     }
 
     const sql = `
@@ -83,7 +88,7 @@ export const updateTask = async (task: UpdateTask) => {
     const params: (string | number)[] = [id];
     if (title) {
       fields.push(`title=$${fields.length + 1}`);
-      params.push(title);
+      params.push(title.trim());
     }
     if (status) {
       fields.push(`status=$${fields.length + 1}`);
@@ -95,7 +100,7 @@ export const updateTask = async (task: UpdateTask) => {
     }
     if (notes) {
       fields.push(`notes=$${fields.length + 1}`);
-      params.push(notes);
+      params.push(notes.trim());
     }
 
     const sql = `
