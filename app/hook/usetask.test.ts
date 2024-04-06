@@ -12,15 +12,7 @@ vi.mock('swr', () => ({
 describe('useTask', () => {
   const todo_uuid = 'test-uuid';
 
-  beforeEach(() => {
-    // vi.mocked(mergeArrays).mockImplementation((current, data) => [
-    //   ...current,
-    //   ...data,
-    // ]);
-    // vi.mocked(sortByIdDesc).mockImplementation((tasks) =>
-    //   tasks.sort((a, b) => b.id - a.id),
-    // );
-  });
+  beforeEach(() => {});
 
   it('initially returns an empty tasks array and isLoading true', () => {
     (useSWR as unknown as MockInstance).mockReturnValue({
@@ -36,8 +28,16 @@ describe('useTask', () => {
 
   it('sets tasks when data is fetched', async () => {
     const mockTasks = [
-      { id: 2, title: 'Task 2' },
-      { id: 3, title: 'Task 3' },
+      {
+        id: 2,
+        title: 'Task 2',
+        updated_date: new Date('2021-01-02'),
+      },
+      {
+        id: 3,
+        title: 'Task 3',
+        updated_date: new Date('2021-01-03'),
+      },
     ];
     (useSWR as unknown as MockInstance).mockReturnValue({
       data: mockTasks,
