@@ -1,26 +1,36 @@
+import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 
 import { TASK_API_PATH } from '../../util';
+
+import { TaskForm } from '..';
 
 import type { Status, Task as TaskType, Todo } from '@/shared/schemas';
 import type {
   APIResponseType,
   MutateTaskResponse,
   TaskCreate,
+  TaskTree,
 } from '@/app/types';
-import toast from 'react-hot-toast';
-import TaskForm from '../TaskForm';
-import { Command } from '@/shared/types';
+import type { Command } from '@/shared/types';
 
 type TaskProps = {
-  task: TaskType;
+  task: TaskTree;
   todo: Todo;
   deleteTask: (task: TaskType) => void;
   updateTask: (task: TaskType) => void;
   broadcast: (task: TaskType, cmd: Command) => void;
+  addSubTask?: (parentID?: number) => void;
 };
 
-const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
+const Task = ({
+  task,
+  todo,
+  deleteTask,
+  updateTask,
+  broadcast,
+  addSubTask,
+}: TaskProps) => {
   const [currentTask, setCurrentTask] = useState<TaskType>(task);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -60,6 +70,11 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
 
   const terminateEditingTask = () => setIsEditing(false);
 
+  const addHandler = () => {
+    const { id } = task;
+    addSubTask?.(id);
+  };
+
   const saveTask = async (updatedTask: TaskCreate) => {
     try {
       const response = await fetch(
@@ -91,6 +106,15 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
   };
 
   const setIsDoneHandler = () => {
+    const notDoneChildren = task.children.find(
+      ({ status }) => status === 'IN_PROGRESS',
+    );
+
+    if (notDoneChildren) {
+      toast.error('Finish all subtask first');
+      return;
+    }
+
     const status: Status = !isDone ? 'DONE' : 'IN_PROGRESS';
     setIsDone((isDone) => !isDone);
     saveTask({ ...currentTask, status });
@@ -104,7 +128,7 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
       change={changeHandler}
     />
   ) : (
-    <li className='group flex w-full items-center justify-start gap-2 border-[1px] border-solid border-[salmon] px-4 py-2'>
+    <li className='group grid w-full grid-cols-[1.25rem_1fr_auto] items-center justify-start gap-2 border-[1px] border-solid border-[salmon] px-4 py-2'>
       <input
         className='grid h-5 w-5 appearance-none place-content-center rounded border-[1px] border-gray-400 bg-transparent before:h-3 before:w-3 before:scale-0 before:rounded before:bg-[salmon] before:content-[""] checked:before:scale-100'
         type='checkbox'
@@ -124,15 +148,38 @@ const Task = ({ task, todo, deleteTask, updateTask, broadcast }: TaskProps) => {
           </p>
         )}
       </div>
-      <div className='hidden w-24 flex-shrink-0 flex-grow-0 items-center justify-between group-hover:flex'>
+      <div
+        className={`${task.children.length > 0 ? 'w-16' : 'w-32'} invisible flex flex-shrink-0 flex-grow-0 items-center justify-between group-hover:visible`}
+      >
+        <button onClick={addHandler} className='hover:text-red-700'>
+          Add
+        </button>
         <button onClick={editHandler} className='hover:text-red-700'>
           Edit
         </button>
-        <button onClick={deleteHandler} className='hover:text-[salmon]'>
-          Delete
-        </button>
+        {task.children.length === 0 && (
+          <button onClick={deleteHandler} className='hover:text-[salmon]'>
+            Delete
+          </button>
+        )}
       </div>
-      <ul></ul>
+      {task.children.length > 0 && (
+        <>
+          <ul className='relative col-span-3 flex w-full list-none flex-col gap-1'>
+            {task.children.map((t) => (
+              <Task
+                key={t.id}
+                task={t}
+                todo={todo}
+                broadcast={broadcast}
+                deleteTask={deleteTask}
+                updateTask={updateTask}
+                addSubTask={addSubTask}
+              />
+            ))}
+          </ul>
+        </>
+      )}
     </li>
   );
 };

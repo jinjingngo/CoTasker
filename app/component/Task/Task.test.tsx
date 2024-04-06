@@ -19,6 +19,7 @@ import toast from 'react-hot-toast';
 import Task from './Task';
 
 import type { Task as TaskType } from '@/shared/schemas';
+import { TaskTree } from '@/app/types';
 
 vi.mock('next/link', () => {
   return {
@@ -48,7 +49,7 @@ describe('Task Component', () => {
     updated_date: new Date(),
   };
 
-  const mockTask: TaskType = {
+  const mockTask: TaskTree = {
     id: 1,
     todo_id: 1,
     status: 'IN_PROGRESS',
@@ -56,6 +57,7 @@ describe('Task Component', () => {
     notes: 'Some notes',
     created_date: new Date(),
     updated_date: new Date(),
+    children: [],
   };
 
   const deleteTask = vi.fn();
