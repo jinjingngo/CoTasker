@@ -58,7 +58,7 @@ export const createTodo = async (title: string): Promise<TodoCreateResult> => {
     const pool = getDBPool();
     const {
       rows: [todo],
-    } = await pool.query<Todo>(sql, [uuid(), title]);
+    } = await pool.query<Todo>(sql, [uuid(), title.trim()]);
 
     return todo;
   } catch (error) {
@@ -83,7 +83,7 @@ export const updateTodo = async (
     const pool = getDBPool();
     const {
       rows: [todo],
-    } = await pool.query<Todo>(sql, [uuid, title]);
+    } = await pool.query<Todo>(sql, [uuid, title.trim()]);
 
     return todo;
   } catch (error) {
