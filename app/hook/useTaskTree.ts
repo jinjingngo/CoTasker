@@ -2,107 +2,78 @@ import { useState, useCallback } from 'react';
 
 import { sortByUpdatedDateDesc } from '../util';
 
-import type { TaskTree } from '../types';
+import type { TaskTree, FilterStatus } from '../types';
 import type { Task } from '@/shared/schemas';
 
-// TODO:
-//  1. filter feature rebuild
-//  2. sort the children
-//  3. refactoring
+const DEFAULT_STATUS: FilterStatus = 'IN_PROGRESS';
+
 export const useTaskTree = () => {
   const [roots, setRoots] = useState<TaskTree[]>([]);
+  const [filteringStatus, setFilteringStatus] =
+    useState<FilterStatus>(DEFAULT_STATUS);
 
-  const updateOrAddNode = useCallback(
-    (taskMap: Record<number, TaskTree>, task: Task) => {
-      if (!taskMap[task.id]) {
-        taskMap[task.id] = { ...task, children: [] };
-      } else {
-        Object.assign(taskMap[task.id], task);
-      }
+  /**
+   * Hook for managing a tree of tasks,
+   *  providing functionality to update and filter the tree based on task status.
+   */
+  const updateTaskTreeWithTasks = useCallback(
+    (tasks: Task[]) => {
+      const filteredTasks =
+        filteringStatus === 'ALL'
+          ? tasks
+          : tasks.filter(({ status }) => status === filteringStatus);
 
-      const node = taskMap[task.id];
-      if (task.parent_id && taskMap[task.parent_id]) {
-        const parent = taskMap[task.parent_id];
-        const index = parent.children.findIndex((t) => t.id === node.id);
-        if (index === -1) {
-          parent.children.push(node);
-        } else {
-          parent.children[index] = node;
+      const taskMap = filteredTasks.reduce<Record<number, TaskTree>>(
+        (acc, task) => {
+          acc[task.id] = { ...task, children: [] };
+          return acc;
+        },
+        {},
+      );
+
+      // Establish parent-child relationships within the filtered set
+      // the magic object reference nature build the tree-view
+      filteredTasks.forEach((task) => {
+        const { id, parent_id } = task;
+        if (
+          parent_id !== undefined &&
+          parent_id !== null &&
+          taskMap[parent_id]
+        ) {
+          taskMap[parent_id].children.push(taskMap[id]);
         }
-      } else {
-        setRoots((prevRoots) => [
-          ...prevRoots.filter((r) => r.id !== node.id),
-          node,
-        ]);
-      }
-    },
-    [],
-  );
+      });
 
-  const getTaskTree = useCallback(
-    (tasks?: Task[]): TaskTree[] => {
-      if (!tasks) return roots;
-
-      const taskMap: Record<number, TaskTree> = {};
-      // Sort tasks to ensure parents are processed before children
-      const sortedTasks = tasks.sort((a, b) => (a.parent_id === null ? -1 : 1));
-      sortedTasks.forEach((task) => updateOrAddNode(taskMap, task));
-
-      const newRoots = Object.values(taskMap).filter(
+      // built roots based on the no parent task and absence of a parent in the map
+      const roots = Object.values(taskMap).filter(
         (task) => !task.parent_id || !taskMap[task.parent_id],
       );
-      newRoots.sort(sortByUpdatedDateDesc);
-      setRoots(newRoots);
-      return newRoots;
-    },
-    [roots, updateOrAddNode],
-  );
 
-  const getExcludedTasks = useCallback(
-    (excludedId?: number): Task[] => {
-      const excludedTasks: Task[] = [];
-      const recurseTasks = (tasks: TaskTree[]) => {
-        tasks.forEach((task) => {
-          if (task.id !== excludedId) {
-            excludedTasks.push({ ...task });
-            recurseTasks(task.children);
-          }
+      // Sort tasks and their children by updated date
+      roots.forEach((task) => {
+        task.children.sort(sortByUpdatedDateDesc);
+        task.children.forEach((child) => {
+          child.children.sort(sortByUpdatedDateDesc);
         });
-      };
-      recurseTasks(roots);
-      return excludedTasks;
+      });
+
+      setRoots(roots);
     },
-    [roots],
+    [filteringStatus],
   );
 
-  const addTask = useCallback(
-    (task: Task) => {
-      getTaskTree([...getExcludedTasks(task.id), task]);
-    },
-    [getExcludedTasks, getTaskTree],
-  );
-
-  const deleteTask = useCallback(
-    (task: Task) => {
-      const excludedTasks = getExcludedTasks(task.id);
-      getTaskTree(excludedTasks);
-    },
-    [getExcludedTasks, getTaskTree],
-  );
-
-  const patchTasks = useCallback(
-    (tasks: Task[]) => {
-      getTaskTree([...getExcludedTasks(), ...tasks]);
-    },
-    [getExcludedTasks, getTaskTree],
-  );
+  /**
+   * Updates the filter status used to display tasks.
+   * @param {FilterStatus} status - The new filter status to apply.
+   */
+  const updateFilteringStatus = useCallback((status: FilterStatus) => {
+    setFilteringStatus(status);
+  }, []);
 
   return {
     roots,
-    addTask,
-    getTaskTree,
-    updateTask: addTask,
-    deleteTask,
-    patchTasks,
+    updateTaskTreeWithTasks,
+    filteringStatus,
+    updateFilteringStatus,
   };
 };

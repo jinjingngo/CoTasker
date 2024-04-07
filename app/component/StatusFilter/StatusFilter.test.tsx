@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   render,
   fireEvent,
@@ -7,11 +7,18 @@ import {
   waitFor,
 } from '@testing-library/react';
 import useStatusFilter from './StatusFilter';
+import type { FilterStatus } from '@/app/types';
 
 describe('useStatusFilter', () => {
-  const { result } = renderHook(() => useStatusFilter());
+  const SetFilteringStatusMock = vi.fn();
+  const mockProps = {
+    filteringStatus: 'IN_PROGRESS' as FilterStatus,
+    setFilteringStatus: SetFilteringStatusMock,
+  };
+  const { result } = renderHook(() => useStatusFilter(mockProps));
   const Component = result.current.Filter;
   render(<Component />);
+
   it('renders the select dropdown with the correct default value', async () => {
     const selectElement = screen.getByRole('combobox') as HTMLSelectElement;
     expect(selectElement.value).toBe('IN_PROGRESS');
@@ -27,8 +34,7 @@ describe('useStatusFilter', () => {
     await waitFor(() => {
       fireEvent.change(selectElement, { target: { value: 'DONE' } });
 
-      const filteringStatus = result.current.filteringStatus;
-      expect(filteringStatus).toEqual(['DONE']);
+      expect(SetFilteringStatusMock).toHaveBeenCalledWith('DONE');
     });
   });
 });

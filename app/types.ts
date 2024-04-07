@@ -1,4 +1,4 @@
-import type { Task, Todo } from '@/shared/schemas';
+import type { Status, Task, Todo } from '@/shared/schemas';
 
 export type TodoQueryResult =
   | {
@@ -35,3 +35,5 @@ export type TaskCreate = Partial<Pick<Task, 'title' | 'status' | 'notes'>>;
 export type TaskTree = Task & {
   children: TaskTree[];
 };
+
+export type FilterStatus = 'ALL' | Status;

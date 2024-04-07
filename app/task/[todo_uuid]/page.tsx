@@ -27,17 +27,20 @@ const TaskPage = ({ params }: PathParam) => {
   const {
     tasks,
     setTasks,
+    statistics,
     roots,
-    addTaskToTaskTree,
-    updateTaskInTaskTree,
-    deleteTaskFromTaskTree,
+    filteringStatus,
+    updateFilteringStatus,
     error: tasksError,
     isLoading,
   } = useTask(todo_uuid);
   const { sendJsonMessage, lastJsonMessage, readyState } =
     useTaskWebSocket(todo_uuid);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
-  const { filteringStatus, Filter } = useStatusFilter();
+  const { Filter } = useStatusFilter({
+    filteringStatus,
+    setFilteringStatus: updateFilteringStatus,
+  });
   const [parentTaskID, setParentTaskID] = useState<number | undefined>(
     undefined,
   );
@@ -85,7 +88,6 @@ const TaskPage = ({ params }: PathParam) => {
       if (!result) return;
 
       setTasks((tasks) => [result, ...tasks]);
-      addTaskToTaskTree(result);
       CoToaster.success('New Task Created!');
       sendTaskToStreamer(result, 'CREATED_TASK');
       terminateCreatingTask();
@@ -117,7 +119,6 @@ const TaskPage = ({ params }: PathParam) => {
    */
   const deleteTask = (task: TaskType) => {
     setTasks((currentTasks) => currentTasks.filter(({ id }) => task.id !== id));
-    deleteTaskFromTaskTree(task);
   };
 
   /**
@@ -126,7 +127,6 @@ const TaskPage = ({ params }: PathParam) => {
    */
   const updateTask = (task: TaskType) => {
     setTasks((currentTask) => replaceItem<TaskType>(currentTask, task, 'id'));
-    updateTaskInTaskTree(task);
   };
 
   useEffect(() => {
@@ -183,31 +183,27 @@ const TaskPage = ({ params }: PathParam) => {
         {todo &&
           roots &&
           roots.length > 0 &&
-          roots
-            .filter((task) => filteringStatus.includes(task.status))
-            .map((task) => (
-              <Task
-                key={task.id}
-                task={task}
-                todo={todo}
-                broadcast={sendTaskToStreamer}
-                deleteTask={deleteTask}
-                updateTask={updateTask}
-                addSubTask={startCreatingTask}
-              />
-            ))}
-        {tasks.length > 0 &&
-          !tasks.filter(({ status }) => status === 'IN_PROGRESS').length &&
-          isEqual(filteringStatus, ['IN_PROGRESS']) &&
+          roots.map((task) => (
+            <Task
+              key={task.id}
+              task={task}
+              todo={todo}
+              broadcast={sendTaskToStreamer}
+              deleteTask={deleteTask}
+              updateTask={updateTask}
+              addSubTask={startCreatingTask}
+            />
+          ))}
+        {roots.length > 0 &&
+          !roots.filter(({ status }) => status === 'IN_PROGRESS').length &&
+          isEqual(filteringStatus, 'IN_PROGRESS') &&
           !isCreatingTask && (
             <li className='flex w-full items-center justify-center border-[1px] border-solid border-[salmon] px-4 py-2 text-gray-400'>
               {"Congrats! You've finished all the tasks!"}
             </li>
           )}
-        {tasks && tasks.length > 0 && (
-          <Footer>
-            {`Count: ${tasks.filter(({ status }) => status === 'DONE').length} / ${tasks.length}`}
-          </Footer>
+        {roots && roots.length > 0 && (
+          <Footer>{`Count: ${statistics.done} / ${statistics.total}`}</Footer>
         )}
       </ul>
     </main>
