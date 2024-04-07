@@ -7,5 +7,9 @@ export default defineConfig({
     environment: 'jsdom',
     exclude: [...configDefaults.exclude, '**/co-tasker-stream/**'],
     setupFiles: ['./vitest.setup.ts'],
+    coverage: {
+      provider: 'v8', // or 'istanbul'
+      reporter: ['text', 'json', 'html'],
+    },
   },
 });

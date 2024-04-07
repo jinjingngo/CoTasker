@@ -72,3 +72,10 @@ I'm using [pnpm](https://pnpm.io/) for package management, but feel free to use 
 5. Navigate to `co-tasker-stream`
    1. Start the WebSocket Worker with `pnpm run dev`.
    2. Initiate continuous testing for the Worker with `pnpm run test`.
+
+## Todo
+
+1. Test coverage.
+2. Folder structure.
+3. Shared Types extraction.
+4. More functionalities
