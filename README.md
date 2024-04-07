@@ -78,4 +78,5 @@ I'm using [pnpm](https://pnpm.io/) for package management, but feel free to use 
 1. Test coverage.
 2. Folder structure.
 3. Shared Types extraction.
-4. More functionalities
+4. Task page title should be the todo title.
+5. More functionalities.
