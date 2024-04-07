@@ -5,16 +5,19 @@ import { TASK_API_PATH, fetcher, mergeArrays, sortByIdDesc } from '../util';
 import { useTaskTree } from '.';
 
 import type { Task } from '@/shared/schemas';
-import type { TaskTree, TasksQueryResult } from '../types';
+import type { TasksQueryResult } from '../types';
+
+type Statistics = {
+  total: number;
+  done: number;
+};
 
 export const useTask = (todo_uuid: string) => {
   const {
     roots,
-    getTaskTree,
-    addTask: addTaskToTaskTree,
-    updateTask: updateTaskInTaskTree,
-    deleteTask: deleteTaskFromTaskTree,
-    patchTasks,
+    updateTaskTreeWithTasks,
+    filteringStatus,
+    updateFilteringStatus,
   } = useTaskTree();
 
   const { data, error, isLoading } = useSWR<TasksQueryResult>(
@@ -23,6 +26,10 @@ export const useTask = (todo_uuid: string) => {
   );
 
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [statistics, setStatistics] = useState<Statistics>({
+    total: 0,
+    done: 0,
+  });
 
   useEffect(() => {
     if (!data) return;
@@ -30,18 +37,24 @@ export const useTask = (todo_uuid: string) => {
       const unshiftedTasks = mergeArrays(currentTasks, data).sort(sortByIdDesc);
       return unshiftedTasks;
     });
-    getTaskTree(data);
-    // No need to `tasks` dependency
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  useEffect(() => {
+    if (!tasks.length) return;
+    updateTaskTreeWithTasks(tasks);
+    setStatistics({
+      total: tasks.length,
+      done: tasks.filter(({ status }) => status === 'DONE').length,
+    });
+  }, [tasks, updateTaskTreeWithTasks]);
 
   return {
     tasks,
     setTasks,
+    statistics,
     roots,
-    addTaskToTaskTree,
-    updateTaskInTaskTree,
-    deleteTaskFromTaskTree,
+    filteringStatus,
+    updateFilteringStatus,
     error,
     isLoading,
   };
