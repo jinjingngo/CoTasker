@@ -50,11 +50,9 @@ export const useTaskTree = () => {
       );
 
       // Sort tasks and their children by updated date
+      roots.sort(sortByUpdatedDateDesc);
       roots.forEach((task) => {
         task.children.sort(sortByUpdatedDateDesc);
-        task.children.forEach((child) => {
-          child.children.sort(sortByUpdatedDateDesc);
-        });
       });
 
       setRoots(roots);
