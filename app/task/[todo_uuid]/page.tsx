@@ -167,7 +167,7 @@ const TaskPage = ({ params }: PathParam) => {
             + Add Task
           </AddButton>
         </li>
-        {(!roots || !roots.length) && !isCreatingTask && (
+        {!roots.length && !isCreatingTask && (
           <li className='flex w-full items-center justify-center border-[1px] px-4 py-2 text-gray-400'>
             No tasks, click + to create one.
           </li>
@@ -193,14 +193,6 @@ const TaskPage = ({ params }: PathParam) => {
               addSubTask={startCreatingTask}
             />
           ))}
-        {roots.length > 0 &&
-          !roots.filter(({ status }) => status === 'IN_PROGRESS').length &&
-          isEqual(filteringStatus, 'IN_PROGRESS') &&
-          !isCreatingTask && (
-            <li className='flex w-full items-center justify-center border-[1px] border-solid border-[salmon] px-4 py-2 text-gray-400'>
-              {"Congrats! You've finished all the tasks!"}
-            </li>
-          )}
         {roots && roots.length > 0 && (
           <Footer>{`Count: ${statistics.done} / ${statistics.total}`}</Footer>
         )}
