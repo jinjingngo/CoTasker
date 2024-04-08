@@ -136,20 +136,22 @@ const Task = ({
         checked={isDone}
         onChange={setIsDoneHandler}
       />
-      <div className='flex-1 group-hover:pr-1'>
-        <p className={isDone ? 'line-through decoration-solid' : ''}>
+      <div className='group-hover:pr-1'>
+        <p
+          className={`${isDone ? 'line-through decoration-solid' : ''} break-all`}
+        >
           {currentTask.title}
         </p>
         {currentTask.notes && (
           <p
-            className={`border-t-[1px] border-[salmon] text-gray-700 ${isDone ? 'line-through decoration-solid' : ''}`}
+            className={`border-t-[1px] border-[salmon] text-gray-700 ${isDone ? 'line-through decoration-solid' : ''} break-all`}
           >
             {currentTask.notes}
           </p>
         )}
       </div>
       <div
-        className={`${task.children.length > 0 ? 'w-16' : 'w-32'} invisible flex flex-shrink-0 flex-grow-0 items-center justify-between group-hover:visible`}
+        className={`${task.children.length > 0 ? 'w-16' : 'w-32'} invisible flex items-center justify-between group-hover:visible`}
       >
         <button onClick={addHandler} className='hover:text-red-700'>
           Add
