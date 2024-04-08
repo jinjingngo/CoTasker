@@ -24,7 +24,7 @@ const Todo = ({ todo, deleteTodo, updateTodo }: TodoProps) => {
       });
       const result = (await response.json()) as APIResponseType;
       if (result.error) {
-        toast.error(result.error);
+        toast.error('Remove the associated tasks first.');
         return;
       }
       toast.success('Deleted');

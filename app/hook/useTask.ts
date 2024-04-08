@@ -40,7 +40,7 @@ export const useTask = (todo_uuid: string) => {
   }, [data]);
 
   useEffect(() => {
-    if (!tasks.length) return;
+    if (!tasks) return;
     updateTaskTreeWithTasks(tasks);
     setStatistics({
       total: tasks.length,

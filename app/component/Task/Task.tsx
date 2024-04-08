@@ -52,7 +52,7 @@ const Task = ({
       );
       const result = (await response.json()) as APIResponseType;
       if (result.error) {
-        toast.error(result.error);
+        toast.error('Ensure all sub-tasks are deleted first.');
         return;
       }
       broadcast(currentTask, 'DELETED_TASK');
