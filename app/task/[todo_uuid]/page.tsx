@@ -25,7 +25,6 @@ const TaskPage = ({ params }: PathParam) => {
 
   const { todo, error: todoError } = useSingleTodo(todo_uuid);
   const {
-    tasks,
     setTasks,
     statistics,
     roots,
@@ -168,7 +167,7 @@ const TaskPage = ({ params }: PathParam) => {
             + Add Task
           </AddButton>
         </li>
-        {(!tasks || !tasks.length) && !isCreatingTask && (
+        {(!roots || !roots.length) && !isCreatingTask && (
           <li className='flex w-full items-center justify-center border-[1px] px-4 py-2 text-gray-400'>
             No tasks, click + to create one.
           </li>
