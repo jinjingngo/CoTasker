@@ -1,8 +1,11 @@
-import { CLIENT_ERROR } from '../../shared/common_error';
-import { Task } from '../../shared/schemas';
-import { updateTask } from './api';
-import type { ParseMessageDataResult, StreamPayload } from '../../shared/types';
-import type { Env } from './types';
+import { CLIENT_ERROR } from "../../web/shared/common_error";
+import { Task } from "../../web/shared/schemas";
+import { updateTask } from "./api";
+import type {
+  ParseMessageDataResult,
+  StreamPayload,
+} from "../../web/shared/types";
+import type { Env } from "./types";
 
 export class Streamer {
   private clients = new Set<WebSocket>();
@@ -13,18 +16,18 @@ export class Streamer {
   }
 
   async fetch(request: Request) {
-    if (request.headers.get('Upgrade') !== 'websocket') {
-      return new Response('Not a WebSocket request', { status: 400 });
+    if (request.headers.get("Upgrade") !== "websocket") {
+      return new Response("Not a WebSocket request", { status: 400 });
     }
 
     const { 0: client, 1: server } = new WebSocketPair();
     this.clients.add(server);
 
     server.accept();
-    server.addEventListener('message', (message) =>
-      this.broadcast(message, server),
+    server.addEventListener("message", (message) =>
+      this.broadcast(message, server)
     );
-    server.addEventListener('close', () => this.clients.delete(server));
+    server.addEventListener("close", () => this.clients.delete(server));
 
     return new Response(null, { status: 101, webSocket: client });
   }
@@ -42,32 +45,32 @@ export class Streamer {
   async broadcast(message: MessageEvent, server: WebSocket) {
     try {
       const { data } = message;
-      console.log('[Broadcast] receiving message: ', data);
+      console.log("[Broadcast] receiving message: ", data);
 
       // only proceed JSON string message
-      if (typeof data !== 'string') return;
+      if (typeof data !== "string") return;
 
       const request = JSON.parse(data) as StreamPayload;
 
       const { error, payload } = await this.parseMessageData(request);
 
       if (error) {
-        console.log('[Broadcast] no broadcasting cause an error: ', error);
+        console.log("[Broadcast] no broadcasting cause an error: ", error);
         server.send(JSON.stringify(error));
         return;
       }
 
-      console.log('[Broadcast] broadcasting message: ', payload);
+      console.log("[Broadcast] broadcasting message: ", payload);
 
       const clients = [...this.clients].filter(
-        (client) => client !== server && client.readyState === WebSocket.OPEN,
+        (client) => client !== server && client.readyState === WebSocket.OPEN
       );
 
       clients.forEach((client) => {
         client.send(JSON.stringify(payload));
       });
     } catch (error) {
-      console.error('[Broadcast] catch an error: ', error);
+      console.error("[Broadcast] catch an error: ", error);
     }
   }
 
@@ -77,11 +80,11 @@ export class Streamer {
       payload: { todo_uuid, task },
     } = data;
 
-    if (!['UPDATING_TASK', 'CREATED_TASK', 'DELETED_TASK'].includes(cmd)) {
+    if (!["UPDATING_TASK", "CREATED_TASK", "DELETED_TASK"].includes(cmd)) {
       return { error: CLIENT_ERROR };
     }
 
-    if (cmd === 'CREATED_TASK' || cmd === 'DELETED_TASK') {
+    if (cmd === "CREATED_TASK" || cmd === "DELETED_TASK") {
       return { payload: data };
     }
 
