@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  services/co-tasker-stream:
+  services/streamer:
     dependencies:
       uuid:
         specifier: ^9.0.1
