@@ -1,4 +1,4 @@
-import type { Task } from '../../shared/schemas';
+import type { Task } from "../../web/shared/schemas";
 
 export interface Env {
   Streamer: DurableObjectNamespace;
@@ -11,5 +11,5 @@ export type API_ERROR = {
 
 export type OperationFunction = (
   payload: any,
-  clients: WebSocket[],
+  clients: WebSocket[]
 ) => void | Promise<API_ERROR | void>;
