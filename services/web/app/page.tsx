@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from 'react';
 
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+
 import { useTodo } from './hook';
 import { TodoProvider } from './provider';
 import { Todo, TodoForm, AddButton, CoToaster, TodoCounter } from './component';
@@ -105,6 +109,36 @@ const TodoPage = () => {
           ))}
         {todos.length > 0 && <TodoCounter />}
       </ul>
+
+      <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        {/* {[1, 2, 3].map((value) => (
+        <ListItem
+          key={value}
+          disableGutters
+          secondaryAction={
+            <IconButton aria-label="comment">
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemText primary={`Line item ${value}`} />
+        </ListItem>
+      ))} */}
+        {todos.length > 0 &&
+          todos.map((todo) => (
+            <ListItem
+            key={todo.id}
+              disableGutters
+              // secondaryAction={
+              //   <IconButton aria-label="comment">
+              //     <CommentIcon />
+              //   </IconButton>
+              // }
+            >
+              <ListItemText primary={todo.title} />
+            </ListItem>
+          ))}
+      </List>
     </main>
   );
 };
