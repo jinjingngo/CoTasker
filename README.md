@@ -11,7 +11,7 @@ A to-do app supports real-time user collaboration among users. The app includes 
 
 ## Usage
 
-![v0.1.0 Recording](./public/v0.1.0_recording.gif)
+![v0.1.0 Recording](./services/web/public/v0.1.0_recording.gif)
 
 ## Architecture
 

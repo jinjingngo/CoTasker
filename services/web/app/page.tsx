@@ -4,7 +4,14 @@ import { useEffect, useState } from 'react';
 
 import { useTodo } from './hook';
 import { TodoProvider } from './provider';
-import { Todo, TodoForm, AddButton, CoToaster, TodoCounter } from './component';
+import {
+  Todo,
+  TodoForm,
+  AddButton,
+  CoToaster,
+  TodoCounter,
+  Helper,
+} from './component';
 
 import { TODO_API_PATH, replaceItem } from './util';
 
@@ -15,6 +22,7 @@ const TodoPage = () => {
   const { todos, setTodos, setTotal, error, isLoading } = useTodo();
 
   const [isCreating, setIsCreating] = useState(false);
+  const [modal, setModal] = useState(false);
 
   const startCreatingTodo = () => {
     if (isCreating) return;
@@ -80,16 +88,26 @@ const TodoPage = () => {
   return (
     <main className='flex min-h-screen flex-col items-center p-12 md:px-24'>
       <CoToaster.Toaster position='top-center' reverseOrder={false} />
+      <Helper isOpen={modal} close={() => setModal(false)} />
       <ul className='relative flex w-full list-none flex-col gap-1 md:w-[85%] lg:w-[70%] xl:w-[50%]'>
-        <li className='flex w-full items-center justify-center rounded-t-lg border-[1px] border-solid border-[salmon] px-4 py-2'>
-          <h1>CoTasker</h1>
-          <AddButton
-            className='absolute right-2'
-            onClick={startCreatingTodo}
-            disabled={isCreating}
-          >
-            + Add Todo
-          </AddButton>
+        <li className='flex w-full items-center justify-between rounded-t-lg border-[1px] border-solid border-[salmon] p-2'>
+          <h1 className='font-bold text-[salmon]'>CoTasker</h1>
+          <div className='flex items-center gap-1'>
+            <span
+              className='cursor-pointer select-none text-2xl text-[salmon] hover:scale-125 hover:underline'
+              title='How to use'
+              onClick={() => setModal(true)}
+            >
+              ﹖
+            </span>
+            <AddButton
+              className=''
+              onClick={startCreatingTodo}
+              disabled={isCreating}
+            >
+              + Add Todo
+            </AddButton>
+          </div>
         </li>
         {isCreating && (
           <TodoForm close={terminateCreatingTodo} save={createTodo} />

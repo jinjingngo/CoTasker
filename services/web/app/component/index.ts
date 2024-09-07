@@ -6,6 +6,7 @@ import NewTodo from './TodoForm';
 import AddButton from './AddButton';
 import useStatusFilter from './StatusFilter';
 import { TodoCounter, Footer } from './TodoCounter';
+import { Helper } from './Help';
 import {
   CoToaster as CoToasterComponent,
   loading,
@@ -35,4 +36,5 @@ export {
   CoToaster,
   TodoCounter,
   Footer,
+  Helper,
 };
